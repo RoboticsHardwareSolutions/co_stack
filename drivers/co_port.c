@@ -1,8 +1,7 @@
-// Includes for the Canfestival driver
 #include "canfestival.h"
 #include "timer.h"
 #include "data.h"
-#include "cm4.h"
+#include "co_port.h"
 
 TIMEVAL last_counter_val = 0;
 TIMEVAL elapsed_time = 0;
