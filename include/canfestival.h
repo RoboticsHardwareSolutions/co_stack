@@ -1,4 +1,9 @@
+#ifndef  __CANFESTIVAL_H
+#define  __CANFESTIVAL_H
+
 #include "applicfg.h"
+#include "can.h"
+#include "dcf.h"
 
 struct CO_Data;
 struct Message;
@@ -12,3 +17,5 @@ void canClose(void);
 
 void disable_it(void);
 void enable_it(void);
+
+#endif

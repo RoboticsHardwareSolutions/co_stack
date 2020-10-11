@@ -1,5 +1,5 @@
-#ifndef __can_h__
-#define __can_h__
+#ifndef __CAN_H__
+#define __CAN_H__
 
 #include "applicfg.h"
 
