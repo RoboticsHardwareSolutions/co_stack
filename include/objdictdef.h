@@ -1,5 +1,6 @@
-#ifndef __objdictdef_h__
-#define __objdictdef_h__
+#ifndef __OBJDICTDEF_H
+#define __OBJDICTDEF_H
+
 
 /************************* CONSTANTES **********************************/
 /** this are static defined datatypes taken fCODE the canopen standard. They

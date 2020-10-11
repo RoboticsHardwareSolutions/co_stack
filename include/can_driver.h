@@ -1,5 +1,5 @@
-#ifndef __can_driver_h__
-#define __can_driver_h__
+#ifndef __CAN_DRIVER_H
+#define __CAN_DRIVER_H
 
 struct struct_s_BOARD;
 
