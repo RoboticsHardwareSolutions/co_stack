@@ -8,10 +8,10 @@
  * @ingroup can
  */
 struct Message {
-  UNS16 cob_id;	/**< message's ID */
-  UNS8 rtr;		/**< remote transmission request. (0 if not rtr message, 1 if rtr message) */
-  UNS8 len;		/**< message's length (0 to 8) */
-  UNS8 data[8]; /**< message's datas */
+    UNS16 cob_id;    /**< message's ID */
+    UNS8 rtr;        /**< remote transmission request. (0 if not rtr message, 1 if rtr message) */
+    UNS8 len;        /**< message's length (0 to 8) */
+    UNS8 data[8]; /**< message's datas */
 };
 
 typedef struct Message Message;

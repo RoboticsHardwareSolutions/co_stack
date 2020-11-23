@@ -1,17 +1,8 @@
-/*!
-** @file   nmtSlave.c
-** @author Edouard TISSERANT and Francis DUPIN
-** @date   Tue Jun  5 08:50:53 2007
-**
-** @brief
-**
-**
-*/
 #include "nmtSlave.h"
 #include "states.h"
-#include "canfestival.h"
 #include "sysdep.h"
 #include "data.h"
+#include "can_driver.h"
 
 /*!
 ** put the slave in the state wanted by the master

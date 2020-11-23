@@ -13,6 +13,7 @@
 #include "canfestival.h"
 #include "sysdep.h"
 #include "config.h"
+#include "can_driver.h"
 
 UNS32 OnNumberOfErrorsUpdate(CO_Data* d, UNS16 unsused_indextable, UNS8 unsused_bSubindex);
 

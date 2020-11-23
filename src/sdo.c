@@ -17,7 +17,7 @@
 #include "def.h"
 #include "states.h"
 #include "sysdep.h"
-#include "canfestival.h"
+#include "can_driver.h"
 #include "data.h"
 #include "objaccessinternal.h"
 

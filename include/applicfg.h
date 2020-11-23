@@ -45,7 +45,7 @@
 #define UNS64  uint64_t
 
 /* Reals */
-#define REAL32	float
+#define REAL32    float
 #define REAL64 double
 
 /* Definition of error and warning macros */
@@ -70,8 +70,8 @@
 #    define MSG_WAR(num, str, val)
 #endif
 
-typedef void* CAN_HANDLE;
+typedef void *CAN_HANDLE;
 
-typedef void* CAN_PORT;
+typedef void *CAN_PORT;
 
 #endif

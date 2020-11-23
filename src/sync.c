@@ -10,7 +10,7 @@
 
 #include "sync.h"
 #include "data.h"
-#include "canfestival.h"
+#include "can_driver.h"
 #include "sysdep.h"
 #include "objaccessinternal.h"
 

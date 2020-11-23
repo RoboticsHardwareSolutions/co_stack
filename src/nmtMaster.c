@@ -13,6 +13,7 @@
 #include "can.h"
 #include "data.h"
 #include "canfestival.h"
+#include "can_driver.h"
 
 /*!
 **
