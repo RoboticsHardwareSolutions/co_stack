@@ -70,7 +70,9 @@
 #    define MSG_WAR(num, str, val)
 #endif
 
-typedef void *CAN_HANDLE;
+//typedef void *CAN_HANDLE;
+//TODO check need this fucking handle or not
+
 
 typedef void *CAN_PORT;
 

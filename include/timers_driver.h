@@ -15,13 +15,13 @@
  * @ingroup timer
  * @brief Acquire mutex
  */
-void EnterMutex(void);
+void enter_mutex(void);
 
 /**
  * @ingroup timer
  * @brief Release mutex
  */
-void LeaveMutex(void);
+void leave_mutex(void);
 
 void WaitReceiveTaskEnd(void*);
 

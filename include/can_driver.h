@@ -5,13 +5,14 @@
 #include "can.h"
 
 
-CAN_PORT canOpen(CAN_HANDLE fd0, CO_Data *d);
 
-int canReceive(CAN_HANDLE fd0, Message *m);
+int canOpen(CAN_PORT port, uint32_t bitrate, CO_Data *d);
 
-int canSend(CAN_HANDLE fd0, Message const *m);
+int canReceive(CAN_PORT fd0, Message *m);
 
-int canClose(CAN_HANDLE fd0);
+int canSend(CAN_PORT fd0, Message const *m);
+
+int canClose(CO_Data *d);
 
 
 #define _P(fc) case fc: MSG(#fc" ");break;
