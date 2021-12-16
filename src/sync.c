@@ -76,7 +76,7 @@ void startSYNC(CO_Data* d)
 				0 /*No id needed*/,
 				&SyncAlarm,
 				US_TO_TIMEVAL(*d->Sync_Cycle_Period), 
-				US_TO_TIMEVAL(*d->Sync_Cycle_Period));
+				US_TO_TIMEVAL(*d->Sync_Cycle_Period), "syncTimer");
 	}
 }
 

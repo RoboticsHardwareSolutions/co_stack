@@ -45,6 +45,7 @@ void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id) {
     UNS8 nodeId = (UNS8) (((d->ConsumerHeartbeatEntries[id]) & (UNS32) 0x00FF0000) >> (UNS8) 16);
     /*MSG_WAR(0x00, "ConsumerHearbeatAlarm", 0x00);*/
 
+    MSG_TIME("ConsumerHeartbeatAlarm");
     /* timer have been notified and is now free (non periodic)*/
     /* -> avoid deleting re-assigned timer if message is received too late*/
     d->ConsumerHeartBeatTimers[id] = TIMER_NONE;
@@ -92,6 +93,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
         e_nodeState newNodeState = (e_nodeState) ((*m).data[0] & 0x7F);
 
         MSG_WAR(0x3110, "Received NMT nodeId : ", nodeId);
+        MSG_TIME("Received NMT\tnodeId: %d\r\n\t\t\t\t\t\tstate: %d", nodeId, newNodeState)
 
         /*!
         ** Record node response for node guarding service
@@ -104,7 +106,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             d->NMTable[nodeId] = newNodeState;
         }
 
-        /* Boot-Up frame reception */
+        /* Boot-Up frame reception */ //TODO why do this?
         if (d->NMTable[nodeId] == Initialisation) {
             /*
             ** The device send the boot-up message (Initialisation)
@@ -126,7 +128,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
                     /* Renew alarm for next heartbeat. */
                     DelAlarm(d->ConsumerHeartBeatTimers[index]);
                     d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time),
-                                                                 0);
+                                                                 0, "ConsumerHB");
                 }
             }
         }
@@ -143,6 +145,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
 void ProducerHeartbeatAlarm(CO_Data *d, UNS32 id) {
     (void) id;
     if (*d->ProducerHeartBeatTime) {
+        MSG_TIME("ProducerHeartbeatAlarm");
         Message msg;
         /* Time expired, the heartbeat must be sent immediately
         ** generate the correct node-id: this is done by the offset 1792
@@ -253,7 +256,7 @@ UNS32 OnHeartbeatProducerUpdate(CO_Data *d, UNS16 unused_indextable, UNS8 unused
     d->ProducerHeartBeatTimer = DelAlarm(d->ProducerHeartBeatTimer);
     if (*d->ProducerHeartBeatTime) {
         TIMEVAL time = *d->ProducerHeartBeatTime;
-        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, 0, MS_TO_TIMEVAL(time));
+        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, 0, MS_TO_TIMEVAL(time), "ProducerHB");
     }
     return 0;
 }
@@ -264,17 +267,18 @@ void heartbeatInit(CO_Data *d) {
     RegisterSetODentryCallBack(d, 0x1017, 0x00, &OnHeartbeatProducerUpdate);
 
     d->toggle = 0;
-
+// TODO Why for all??? We must check timers for us
+//
     for (index = (UNS8) 0x00; index < *d->ConsumerHeartbeatCount; index++) {
         TIMEVAL time = (UNS16) ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
         if (time) {
-            d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0);
+            d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0, "ConsumerHB");
         }
     }
 
     if (*d->ProducerHeartBeatTime) {
         TIMEVAL time = *d->ProducerHeartBeatTime;
-        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time));
+        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time), "ProducerHB");
     }
 }
 
@@ -288,7 +292,7 @@ void nodeguardInit(CO_Data *d) {
         UNS8 i;
 
         TIMEVAL time = *d->GuardTime;
-        d->GuardTimeTimer = SetAlarm(d, 0, &GuardTimeAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time));
+        d->GuardTimeTimer = SetAlarm(d, 0, &GuardTimeAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time), "GuardTimeTimer");
         MSG_WAR(0x0, "GuardTime: ", time);
 
         for (i = 0; i < NMT_MAX_NODE_ID; i++) {

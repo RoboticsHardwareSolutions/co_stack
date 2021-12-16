@@ -4,6 +4,7 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+#include <time.h>
 
 /*  Define the architecture : little_endian or big_endian
  -----------------------------------------------------
@@ -70,6 +71,24 @@
 #    define MSG_WAR(num, str, val)
 #endif
 
+#    define MSG_TIME(...) \
+        struct timespec spec;\
+        clock_gettime(CLOCK_REALTIME, &spec);\
+        MSG("%02jd:%02jd.%03ld: ",\
+        (spec.tv_sec % 3600) / 60, spec.tv_sec % 60, spec.tv_nsec / 1000000);\
+        printf (__VA_ARGS__);\
+        printf("\r\n");
+
+
+#if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
+#define dFUNCTION __PRETTY_FUNCTION__
+#else
+#ifdef _MSC_VER
+       #define dFUNCTION __FUNCSIG__
+   #else
+       #define dFUNCTION __FUNCTION__
+   #endif
+#endif
 //typedef void *CAN_HANDLE;
 //TODO check need this fucking handle or not
 
