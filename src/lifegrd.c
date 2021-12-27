@@ -93,7 +93,16 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
         e_nodeState newNodeState = (e_nodeState) ((*m).data[0] & 0x7F);
 
         MSG_WAR(0x3110, "Received NMT nodeId : ", nodeId);
-        MSG_TIME("Received NMT\tnodeId: %d\r\n\t\t\t\t\t\tstate: %d", nodeId, newNodeState)
+        switch( newNodeState ) {
+            case Initialisation:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Initialisation\r\n", nodeId);break;
+            case Disconnected:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Disconnected\r\n", nodeId);break;
+            case Connecting:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Connecting\r\n", nodeId);break;
+            //case Preparing:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Preparing\r\n", nodeId);break;
+            case Stopped:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Stopped\r\n", nodeId);break;
+            case Operational:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Operational\r\n", nodeId);break;
+            case Pre_operational:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Pre_operational\r\n", nodeId);break;
+            case Unknown_state:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Unknown_state\r\n", nodeId);break;
+        }
 
         /*!
         ** Record node response for node guarding service
@@ -127,8 +136,11 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
                     TIMEVAL time = ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
                     /* Renew alarm for next heartbeat. */
                     DelAlarm(d->ConsumerHeartBeatTimers[index]);
+                    char res[20];
+                    sprintf(res,"%s%d","HeartBeat_",(UNS8) (((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x00FF0000)
+                                                                    >> (UNS8) 16));
                     d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time),
-                                                                 0, "ConsumerHB");
+                                                                 0, res);
                 }
             }
         }
@@ -272,7 +284,10 @@ void heartbeatInit(CO_Data *d) {
     for (index = (UNS8) 0x00; index < *d->ConsumerHeartbeatCount; index++) {
         TIMEVAL time = (UNS16) ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
         if (time) {
-            d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0, "ConsumerHB");
+            char res[20];
+            sprintf(res,"%s%d","HeartBeat_",(UNS8) (((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x00FF0000)
+                    >> (UNS8) 16));
+            d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0, res);
         }
     }
 

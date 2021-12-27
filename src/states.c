@@ -19,17 +19,17 @@
 **                                                                                                 
 ** @param d                                                                                        
 ** @param newCommunicationState                                                                    
-**/     
-void switchCommunicationState(CO_Data* d, 
+**/
+void switchCommunicationState(CO_Data* d,
 	s_state_communication *newCommunicationState);
-	
+
 /*!                                                                                                
 **                                                                                                 
 **                                                                                                 
 ** @param d                                                                                        
 **                                                                                                 
 ** @return                                                                                         
-**/    
+**/
 e_nodeState getState(CO_Data* d)
 {
   return d->nodeState;
@@ -40,7 +40,7 @@ e_nodeState getState(CO_Data* d)
 **                                                                                                 
 ** @param d                                                                                        
 ** @param m                                                                                        
-**/  
+**/
 void canDispatch(CO_Data* d, Message *m)
 {
 	UNS16 cob_id = UNS16_LE(m->cob_id);
@@ -115,7 +115,7 @@ void canDispatch(CO_Data* d, Message *m)
 **                                                                                                 
 ** @param d                                                                                        
 ** @param newCommunicationState                                                                    
-**/  	
+**/
 void switchCommunicationState(CO_Data* d, s_state_communication *newCommunicationState)
 {
 #ifdef CO_ENABLE_LSS
@@ -124,7 +124,7 @@ void switchCommunicationState(CO_Data* d, s_state_communication *newCommunicatio
 	StartOrStop(csSDO,	None,		resetSDO(d))
 	StartOrStop(csSYNC,	startSYNC(d),		stopSYNC(d))
 	StartOrStop(csLifeGuard,	lifeGuardInit(d),	lifeGuardStop(d))
-	StartOrStop(csEmergency,	emergencyInit(d),	emergencyStop(d)) 
+	StartOrStop(csEmergency,	emergencyInit(d),	emergencyStop(d))
 	StartOrStop(csPDO,	PDOInit(d),	PDOStop(d))
 	StartOrStop(csBoot_Up,	None,	slaveSendBootUp(d))
 }
@@ -136,7 +136,7 @@ void switchCommunicationState(CO_Data* d, s_state_communication *newCommunicatio
 ** @param newState                                                                                 
 **                                                                                                 
 ** @return                                                                                         
-**/  
+**/
 UNS8 setState(CO_Data* d, e_nodeState newState)
 {
 	if(newState != d->nodeState){
@@ -148,24 +148,24 @@ UNS8 setState(CO_Data* d, e_nodeState newState)
 				switchCommunicationState(d, &newCommunicationState);
 				/* call user app init callback now. */
 				/* d->initialisation MUST NOT CALL SetState */
-				(*d->initialisation)(d);				
+				(*d->initialisation)(d);
 			}
 
 			/* Automatic transition - No break statement ! */
 			/* Transition from Initialisation to Pre_operational */
 			/* is automatic as defined in DS301. */
 			/* App don't have to call SetState(d, Pre_operational) */
-								
+
 			case Pre_operational:
 			{
-				
+
 				s_state_communication newCommunicationState = {0, 1, 1, 1, 1, 0, 1};
 				d->nodeState = Pre_operational;
 				switchCommunicationState(d, &newCommunicationState);
                 (*d->preOperational)(d);
 			}
 			break;
-								
+
 			case Operational:
 			if(d->nodeState == Initialisation) return 0xFF;
 			{
@@ -176,7 +176,7 @@ UNS8 setState(CO_Data* d, e_nodeState newState)
 				(*d->operational)(d);
 			}
 			break;
-						
+
 			case Stopped:
 			if(d->nodeState == Initialisation) return 0xFF;
 			{
@@ -191,11 +191,11 @@ UNS8 setState(CO_Data* d, e_nodeState newState)
 				return 0xFF;
 
 		}/* end switch case */
-	
+
 	}
 	/* d->nodeState contains the final state */
 	/* may not be the requested state */
-    return d->nodeState;  
+    return d->nodeState;
 }
 
 /*!                                                                                                
@@ -204,7 +204,7 @@ UNS8 setState(CO_Data* d, e_nodeState newState)
 ** @param d                                                                                        
 **                                                                                                 
 ** @return                                                                                         
-**/ 
+**/
 UNS8 getNodeId(CO_Data* d)
 {
   return *d->bDeviceNodeId;
@@ -215,11 +215,11 @@ UNS8 getNodeId(CO_Data* d)
 **                                                                                                 
 ** @param d                                                                                        
 ** @param nodeId                                                                                   
-**/   
+**/
 void setNodeId(CO_Data* d, UNS8 nodeId)
 {
   UNS16 offset = d->firstIndex->SDO_SVR;
-  
+
 #ifdef CO_ENABLE_LSS
   d->lss_transfer.nodeID=nodeId;
   if(nodeId==0xFF){
@@ -246,13 +246,13 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
     }
   }
 
-  /* 
+  /*
    	Initialize the server(s) SDO parameters
-  	Remember that only one SDO server is allowed, defined at index 0x1200	
- 		
-  	Initialize the client(s) SDO parameters 	
-  	Nothing to initialize (no default values required by the DS 401)	
-  	Initialize the receive PDO communication parameters. Only for 0x1400 to 0x1403 
+  	Remember that only one SDO server is allowed, defined at index 0x1200
+
+  	Initialize the client(s) SDO parameters
+  	Nothing to initialize (no default values required by the DS 401)
+  	Initialize the receive PDO communication parameters. Only for 0x1400 to 0x1403
   */
   {
     UNS8 i = 0;

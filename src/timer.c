@@ -94,12 +94,13 @@ TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL va
 TIMER_HANDLE DelAlarm(TIMER_HANDLE handle)
 {
 	/* Quick and dirty. system timer will continue to be trigged, but no action will be preformed. */
-	MSG_WAR(0x3320, "DelAlarm. handle = ", handle);
+	//MSG_WAR(0x3320, "DelAlarm. handle = ", handle);
 	if(handle != TIMER_NONE)
 	{
 		if(handle == last_timer_raw)
 			last_timer_raw--;
 		timers[handle].state = TIMER_FREE;
+		D_MSG_TIME("Delete timer %s", timers[handle].name);
 		strcpy(timers[handle].name, "*del*");
 	}
 	return TIMER_NONE;
@@ -174,10 +175,10 @@ void TimeDispatch(void)
 		{
 			D_MSG_TIME("TIMER_TRIG %s", row->name);
 			row->state &= ~TIMER_TRIG; /* reset trig state (will be free if not periodic) */
-			if(row->callback)
-				(*row->callback)(row->d, row->id); /* trig ! */
 			if(!row->interval)
 				DelAlarm(i);
+			if(row->callback)
+				(*row->callback)(row->d, row->id); /* trig ! */
 		}
 	}
 }

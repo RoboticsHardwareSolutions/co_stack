@@ -607,6 +607,10 @@ _sendPDOevent (CO_Data * d, UNS8 isSyncEvent)
               if ( /* bSubCount always 5 with objdictedit -> check disabled */
                    /*d->objdict[offsetObjdict].bSubCount < 5 ||*/
                    /* check if TPDO is not valid */
+
+                   /* 30 Bit:
+                    * Set to 0 if the node does use the PDO.
+                    * Set to 1 if the node does not use the PDO. */
                    READ_UNS32(d->objdict, offsetObjdict, 1) & 0x80000000)
                 {
                   MSG_WAR (0x3960, "Not a valid PDO ", 0x1800 + pdoNum);

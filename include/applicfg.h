@@ -77,7 +77,7 @@
         MSG("%02jd:%02jd.%03ld: ",\
         (spec.tv_sec % 3600) / 60, spec.tv_sec % 60, spec.tv_nsec / 1000000);\
         printf (__VA_ARGS__);\
-        printf("\r\n");
+        printf("\r\n")
 
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
