@@ -55,6 +55,7 @@
 
 /* Definition of MSG_ERR */
 /* --------------------- */
+#ifndef TUI
 #ifdef DEBUG_ERR_CONSOLE_ON
 #    define MSG_ERR(num, str, val)            \
           MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val);
@@ -79,6 +80,33 @@
         printf (__VA_ARGS__);\
         printf("\r\n")
 
+/*    Disable of TUI     */
+/* --------------------- */
+#    define TUI_CHOSECAN() SOCKET_VCAN1
+#    define TUI_CHOISESPEED() PCAN_BAUD_1M
+#    define TUI_INITWIN()
+#    define GETED_NMT_STATE(n_node)
+#    define TUI_MYNMTSTATE(state)
+#else
+
+#    define MSG_WAR(num, str, val)
+#    define MSG_ERR(num, str, val)
+#    define MSG_TIME(...)
+#    define MSG(...)
+
+
+
+/*     Enable of TUI     */
+/* --------------------- */
+#    define TUI_CHOSECAN() tui_choiseCAN()
+#    define TUI_CHOISESPEED() tui_choiseSpeed()
+#    define TUI_INITWIN() tui_initWindows()
+#    define GETED_NMT_STATE(n_node) tui_updateNMTable(n_node)
+#    define TUI_MYNMTSTATE(state) tui_NMTstate(state)
+
+
+
+#endif
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
 #define dFUNCTION __PRETTY_FUNCTION__

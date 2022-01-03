@@ -35,6 +35,58 @@ e_nodeState getState(CO_Data* d)
   return d->nodeState;
 }
 
+
+void tmp_pdo(CO_Data* d){
+    UNS16 offset = d->firstIndex->PDO_RCV_MAP;
+    UNS16 lastIndex = d->lastIndex->PDO_RCV_MAP;
+    UNS8 RPDOn = 0;
+    while(offset <= lastIndex) {
+        int numMap = 0;
+        while (numMap < READ_UNS8(d->objdict, offset, 0)){
+
+            UNS32 mappingParameter = READ_UNS32(d->objdict, offset, numMap + 1);
+            UNS16 index = (UNS16) (mappingParameter >> 16);
+            UNS32 Size = (UNS32) (mappingParameter & (UNS32) 0x000000FF);     /* Size in bits */
+            UNS32 ByteSize = 1 + ((Size - 1) >> 3);
+            UNS8 subIndex = (UNS8) (((mappingParameter) >> (UNS8) 8) & (UNS32) 0x000000FF);
+
+            UNS8 dataType;            /* Unused */
+            UNS8 tmp[] = { 0, 0, 0, 0, 0, 0, 0, 0 };  /* temporary space to hold bits */
+
+            MSG_WAR (0x300F, "  got mapping parameter : ", mappingParameter);
+            MSG_WAR (0x3050, "    at index : ", ObjDict_Data.objdict[ObjDict_Data.firstIndex->PDO_TRS_MAP].index);
+            MSG_WAR (0x3051, "    sub-index : ", numMap + 1);
+            int data = 0;
+            getODentry (d, index, subIndex, tmp, &ByteSize, &dataType, 0);
+            switch(dataType) {
+                case int8:
+                    data = tmp[0];
+                    break;
+                case int16:
+                    data = tmp[0]|(tmp[1]<<8);
+                    break;
+                case int32:
+                    data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
+                    break;
+                case uint8:
+                    data = tmp[0];
+                    break;
+                case uint16:
+                    data = tmp[0]|(tmp[1]<<8);
+                    break;
+                case uint32:
+                    data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
+                    break;
+            }
+            tui_RPDO(RPDOn, numMap, "a:0x%08x d:0x%x", READ_UNS32(d->objdict, offset, numMap + 1), data);
+            numMap++;
+        }
+        RPDOn++;
+        offset++;
+    }
+}
+
+
 /*!                                                                                                
 **                                                                                                 
 **                                                                                                 
@@ -64,8 +116,10 @@ void canDispatch(CO_Data* d, Message *m)
 		case PDO3rx:
 		case PDO4tx:
 		case PDO4rx:
-			if (d->CurrentCommunicationState.csPDO)
-				proceedPDO(d,m);
+			if (d->CurrentCommunicationState.csPDO) {
+                proceedPDO(d, m);
+                tmp_pdo(d);
+            }
 			break;
 		case SDOtx:
 		case SDOrx:
@@ -193,6 +247,7 @@ UNS8 setState(CO_Data* d, e_nodeState newState)
 		}/* end switch case */
 
 	}
+    TUI_MYNMTSTATE(d->nodeState);
 	/* d->nodeState contains the final state */
 	/* may not be the requested state */
     return d->nodeState;

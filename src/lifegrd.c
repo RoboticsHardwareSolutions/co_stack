@@ -52,6 +52,7 @@ void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id) {
 
     /* set node state */
     d->NMTable[nodeId] = Disconnected;
+    GETED_NMT_STATE(d->NMTable);
     /*! call heartbeat error with NodeId */
     (*d->heartbeatError)(d, nodeId);
 }
@@ -104,6 +105,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             case Unknown_state:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Unknown_state\r\n", nodeId);break;
         }
 
+        GETED_NMT_STATE(d->NMTable);
         /*!
         ** Record node response for node guarding service
         */

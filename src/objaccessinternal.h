@@ -1,7 +1,6 @@
 #ifndef __objaccessinternal_h__
 #define __objaccessinternal_h__
 
-#include "objdictdef.h"
 #include "data.h"
 
 #define READ_UNS32(objDict, index, subIndex)\
