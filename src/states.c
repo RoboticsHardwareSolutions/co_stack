@@ -54,7 +54,7 @@ void tmp_pdo(CO_Data* d){
             UNS8 tmp[] = { 0, 0, 0, 0, 0, 0, 0, 0 };  /* temporary space to hold bits */
 
             MSG_WAR (0x300F, "  got mapping parameter : ", mappingParameter);
-            MSG_WAR (0x3050, "    at index : ", ObjDict_Data.objdict[ObjDict_Data.firstIndex->PDO_TRS_MAP].index);
+            //MSG_WAR (0x3050, "    at index : ", ObjDict_Data.objdict[ObjDict_Data.firstIndex->PDO_TRS_MAP].index);
             MSG_WAR (0x3051, "    sub-index : ", numMap + 1);
             int data = 0;
             getODentry (d, index, subIndex, tmp, &ByteSize, &dataType, 0);
@@ -95,6 +95,7 @@ void tmp_pdo(CO_Data* d){
 **/
 void canDispatch(CO_Data* d, Message *m)
 {
+    MSG_WAR(0xFFFF, "canDispatch", 0);
 	UNS16 cob_id = UNS16_LE(m->cob_id);
 	 switch(cob_id >> 7)
 	{

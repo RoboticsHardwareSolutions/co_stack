@@ -105,7 +105,6 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             case Unknown_state:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Unknown_state\r\n", nodeId);break;
         }
 
-        GETED_NMT_STATE(d->NMTable);
         /*!
         ** Record node response for node guarding service
         */
@@ -146,6 +145,8 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
                 }
             }
         }
+
+        GETED_NMT_STATE(d->NMTable);
     }
 }
 

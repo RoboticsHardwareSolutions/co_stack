@@ -82,16 +82,21 @@
 
 /*    Disable of TUI     */
 /* --------------------- */
-#    define TUI_CHOSECAN() SOCKET_VCAN1
+#    define TUI_CHOSECAN() PCAN_USBBUS1
 #    define TUI_CHOISESPEED() PCAN_BAUD_1M
 #    define TUI_INITWIN()
+#    define TUI_DELWINDOWS()
 #    define GETED_NMT_STATE(n_node)
 #    define TUI_MYNMTSTATE(state)
 #else
 
-#    define MSG_WAR(num, str, val)
+#    define MSG_WAR(num, str, val)\
+        tui_insert_log(num, str, val)
 #    define MSG_ERR(num, str, val)
-#    define MSG_TIME(...)
+#    define MSG_TIME(...)\
+        char str_time[50];\
+        sprintf(str_time,  __VA_ARGS__);\
+        tui_insert_log(str_time)
 #    define MSG(...)
 
 
@@ -101,8 +106,10 @@
 #    define TUI_CHOSECAN() tui_choiseCAN()
 #    define TUI_CHOISESPEED() tui_choiseSpeed()
 #    define TUI_INITWIN() tui_initWindows()
+#    define TUI_DELWINDOWS() tui_delWindows()
 #    define GETED_NMT_STATE(n_node) tui_updateNMTable(n_node)
 #    define TUI_MYNMTSTATE(state) tui_NMTstate(state)
+
 
 
 
