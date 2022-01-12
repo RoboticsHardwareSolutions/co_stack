@@ -95,7 +95,6 @@ void tmp_pdo(CO_Data* d){
 **/
 void canDispatch(CO_Data* d, Message *m)
 {
-    MSG_WAR(0xFFFF, "canDispatch", 0);
 	UNS16 cob_id = UNS16_LE(m->cob_id);
 	 switch(cob_id >> 7)
 	{

@@ -5,6 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
+#include "menu.h"
 
 /*  Define the architecture : little_endian or big_endian
  -----------------------------------------------------
@@ -67,7 +68,7 @@
 /* --------------------- */
 #ifdef DEBUG_WAR_CONSOLE_ON
 #    define MSG_WAR(num, str, val)          \
-          MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val);
+          MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val)
 #else
 #    define MSG_WAR(num, str, val)
 #endif
@@ -83,7 +84,7 @@
 /*    Disable of TUI     */
 /* --------------------- */
 #    define TUI_CHOSECAN() PCAN_USBBUS1
-#    define TUI_CHOISESPEED() PCAN_BAUD_1M
+#    define TUI_CHOISESPEED() PCAN_BAUD_500K
 #    define TUI_INITWIN()
 #    define TUI_DELWINDOWS()
 #    define GETED_NMT_STATE(n_node)
@@ -94,9 +95,9 @@
         tui_insert_log(num, str, val)
 #    define MSG_ERR(num, str, val)
 #    define MSG_TIME(...)\
-        char str_time[50];\
-        sprintf(str_time,  __VA_ARGS__);\
-        tui_insert_log(str_time)
+//        char str_time[50];\
+//        sprintf(str_time,  __VA_ARGS__);\
+//        tui_insert_log(str_time)
 #    define MSG(...)
 
 
