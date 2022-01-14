@@ -78,7 +78,7 @@ void tmp_pdo(CO_Data* d){
                     data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
                     break;
             }
-            tui_RPDO(RPDOn, numMap, "a:0x%08x d:0x%x", READ_UNS32(d->objdict, offset, numMap + 1), data);
+            TUI_RPDO(RPDOn, numMap, "a:0x%08x d:0x%x", READ_UNS32(d->objdict, offset, numMap + 1), data);
             numMap++;
         }
         RPDOn++;

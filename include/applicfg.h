@@ -4,8 +4,12 @@
 #include <stdio.h>
 #include <stdint.h>
 #include <string.h>
+
+#if defined(RCAN_WINDOWS) || defined(RCAN_MACOS) || defined(RCAN_UNIX)
 #include <time.h>
 #include "menu.h"
+struct timespec spec;
+#endif
 
 /*  Define the architecture : little_endian or big_endian
  -----------------------------------------------------
@@ -52,20 +56,29 @@
 
 /* Definition of error and warning macros */
 /* -------------------------------------- */
-#	define MSG(...) printf (__VA_ARGS__)
 
-/* Definition of MSG_ERR */
-/* --------------------- */
+#if defined(PRINT)
+#	define MSG(...) printf (__VA_ARGS__)
+#else
+#    define MSG(...)
+#endif
+
+/**************************************************************************/
+/* Definition outputs to terminal                                         */
+/**************************************************************************/
+
 #ifndef TUI
+/*         Definition of MSG_ERR           */
+/* --------------------------------------- */
 #ifdef DEBUG_ERR_CONSOLE_ON
 #    define MSG_ERR(num, str, val)            \
-          MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val);
+          MSG("ERROR: %s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val);
 #else
 #    define MSG_ERR(num, str, val)
 #endif
 
-/* Definition of MSG_WAR */
-/* --------------------- */
+/*          Definition of MSG_WAR          */
+/* --------------------------------------- */
 #ifdef DEBUG_WAR_CONSOLE_ON
 #    define MSG_WAR(num, str, val)          \
           MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val)
@@ -73,32 +86,52 @@
 #    define MSG_WAR(num, str, val)
 #endif
 
+/*           Definition of MSG_TIME        */
+/* --------------------------------------- */
+#ifdef DEBUG_MSG_TIME_ON
 #    define MSG_TIME(...) \
-        struct timespec spec;\
         clock_gettime(CLOCK_REALTIME, &spec);\
         MSG("%02jd:%02jd.%03ld: ",\
         (spec.tv_sec % 3600) / 60, spec.tv_sec % 60, spec.tv_nsec / 1000000);\
-        printf (__VA_ARGS__);\
-        printf("\r\n")
+        MSG (__VA_ARGS__);\
+        MSG("\r\n")
+#else
+#    define MSG_TIME(...)
+#endif
 
-/*    Disable of TUI     */
-/* --------------------- */
+/*            Disable of TUI               */
+/* --------------------------------------- */
 #    define TUI_CHOSECAN() PCAN_USBBUS1
-#    define TUI_CHOISESPEED() PCAN_BAUD_500K
+#    define TUI_CHOISESPEED() PCAN_BAUD_1M
 #    define TUI_INITWIN()
 #    define TUI_DELWINDOWS()
 #    define GETED_NMT_STATE(n_node)
 #    define TUI_MYNMTSTATE(state)
-#else
+#    define TUI_RPDO(RPDOn, numMap, str, ...)
 
-#    define MSG_WAR(num, str, val)\
-        tui_insert_log(num, str, val)
+
+#else
+/**************************************************************************/
+/* Definition outputs to TUI                                              */
+/**************************************************************************/
+
+
+#ifdef DEBUG_ERR_CONSOLE_ON
+#    define MSG_ERR(num, str, val)  //TODO
+#else
 #    define MSG_ERR(num, str, val)
-#    define MSG_TIME(...)\
+#endif
+
+#ifdef DEBUG_WAR_CONSOLE_ON
+#    define MSG_WAR(num, str, val) tui_insert_log(num, str, val)
+#else
+#    define MSG_WAR(num, str, val)
+#endif
+
+#    define MSG_TIME(...) //TODO
 //        char str_time[50];\
 //        sprintf(str_time,  __VA_ARGS__);\
 //        tui_insert_log(str_time)
-#    define MSG(...)
 
 
 
@@ -110,6 +143,7 @@
 #    define TUI_DELWINDOWS() tui_delWindows()
 #    define GETED_NMT_STATE(n_node) tui_updateNMTable(n_node)
 #    define TUI_MYNMTSTATE(state) tui_NMTstate(state)
+#    define TUI_RPDO(RPDOn, numMap, str, ...) tui_RPDO(RPDOn, numMap, str, __VA_ARGS__)
 
 
 

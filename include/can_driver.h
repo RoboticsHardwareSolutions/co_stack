@@ -10,6 +10,10 @@ int canOpen(CAN_PORT port, uint32_t bitrate, CO_Data *d);
 
 int canReceive(CAN_PORT fd0, Message *m);
 
+#if !defined(RCAN_WINDOWS) && !defined(RCAN_MACOS) && !defined(RCAN_UNIX)
+void can_loop(CAN_PORT port, uint32_t bitrate, CO_Data *d);
+#endif
+
 int canSend(CAN_PORT fd0, Message const *m);
 
 int canClose(CO_Data *d);
