@@ -101,8 +101,14 @@ struct timespec spec;
 
 /*            Disable of TUI               */
 /* --------------------------------------- */
+
+#if !defined(RCAN_WINDOWS) && !defined(RCAN_MACOS) && !defined(RCAN_UNIX)
+#    define TUI_CHOSECAN() CAN1
+#    define TUI_CHOISESPEED() 1000000
+#else
 #    define TUI_CHOSECAN() PCAN_USBBUS1
 #    define TUI_CHOISESPEED() PCAN_BAUD_1M
+#endif
 #    define TUI_INITWIN()
 #    define TUI_DELWINDOWS()
 #    define GETED_NMT_STATE(n_node)
