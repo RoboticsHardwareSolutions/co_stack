@@ -52,7 +52,7 @@ void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id) {
 
     /* set node state */
     d->NMTable[nodeId] = Disconnected;
-    GETED_NMT_STATE(d->NMTable);
+    GETED_NMT_STATE((int *)d->NMTable);
     /*! call heartbeat error with NodeId */
     (*d->heartbeatError)(d, nodeId);
 }
@@ -146,7 +146,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             }
         }
 
-        GETED_NMT_STATE(d->NMTable);
+        GETED_NMT_STATE((int *)d->NMTable);
     }
 }
 

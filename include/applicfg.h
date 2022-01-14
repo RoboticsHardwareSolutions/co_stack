@@ -54,12 +54,19 @@ struct timespec spec;
 #define REAL32    float
 #define REAL64 double
 
-# define ARM !defined(RCAN_WINDOWS) && !defined(RCAN_MACOS) && !defined(RCAN_UNIX)
-# define NOT_ARM (defined(RCAN_WINDOWS)) || (defined(RCAN_MACOS)) || (defined(RCAN_UNIX))
+# define ARM !RCAN_WINDOWS && !RCAN_MACOS && !RCAN_UNIX
+# define NOT_ARM RCAN_WINDOWS || RCAN_MACOS || RCAN_UNIX
 
 
 /* Definition of error and warning macros */
 /* -------------------------------------- */
+
+
+/**************************************************************************/
+/* Definition outputs to terminal                                         */
+/**************************************************************************/
+
+#ifndef TUI
 
 #if defined(PRINT)
 #	define MSG(...) printf (__VA_ARGS__)
@@ -67,11 +74,6 @@ struct timespec spec;
 #    define MSG(...)
 #endif
 
-/**************************************************************************/
-/* Definition outputs to terminal                                         */
-/**************************************************************************/
-
-#ifndef TUI
 /*         Definition of MSG_ERR           */
 /* --------------------------------------- */
 #ifdef DEBUG_ERR_CONSOLE_ON
@@ -125,6 +127,7 @@ struct timespec spec;
 /* Definition outputs to TUI                                              */
 /**************************************************************************/
 
+#    define MSG(...)
 
 #ifdef DEBUG_ERR_CONSOLE_ON
 #    define MSG_ERR(num, str, val)  //TODO
