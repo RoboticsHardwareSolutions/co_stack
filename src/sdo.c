@@ -160,7 +160,7 @@ d->transfers[id].timer = DelAlarm(d->transfers[id].timer);
 
 #define StartSDO_TIMER(id) \
 	MSG_WAR(0x3A06, "StartSDO_TIMER for line : ", line);\
-d->transfers[id].timer = SetAlarm(d,id,&SDOTimeoutAlarm,(TIMEVAL)MS_TO_TIMEVAL(SDO_TIMEOUT_MS),0, "transfers");
+d->transfers[id].timer = SetAlarm(d,id,&SDOTimeoutAlarm,(TIMEVAL)MS_TO_TIMEVAL(SDO_TIMEOUT_MS),0);
 
 #define RestartSDO_TIMER(id) \
 	MSG_WAR(0x3A07, "restartSDO_TIMER for line : ", line);\

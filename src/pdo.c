@@ -263,7 +263,7 @@ proceedPDO (CO_Data * d, Message * m)
                     if(EventTimerDuration){
                         DelAlarm (d->RxPDO_EventTimers[numPdo]);
                         d->RxPDO_EventTimers[numPdo] = SetAlarm (d, numPdo, d->RxPDO_EventTimers_Handler,
-                        MS_TO_TIMEVAL (EventTimerDuration), 0, "RxPDO_EventTimers");
+                        MS_TO_TIMEVAL (EventTimerDuration), 0);
                     }
                 }
                 return 0;
@@ -523,7 +523,7 @@ sendOnePDOevent (CO_Data * d, UNS8 pdoNum)
           DelAlarm (d->PDO_status[pdoNum].event_timer);
           d->PDO_status[pdoNum].event_timer =
             SetAlarm (d, pdoNum, &PDOEventTimerAlarm,
-                      MS_TO_TIMEVAL (EventTimerDuration), 0, "PDO_status");
+                      MS_TO_TIMEVAL (EventTimerDuration), 0);
         }
 
       if (InhibitTimerDuration)
@@ -532,7 +532,7 @@ sendOnePDOevent (CO_Data * d, UNS8 pdoNum)
           d->PDO_status[pdoNum].inhibit_timer =
             SetAlarm (d, pdoNum, &PDOInhibitTimerAlarm,
                       US_TO_TIMEVAL (InhibitTimerDuration *
-                                     100), 0, "PDO_status");
+                                     100), 0);
           /* and inhibit TPDO */
           d->PDO_status[pdoNum].transmit_type_parameter |=
             PDO_INHIBITED;
