@@ -109,7 +109,7 @@ struct timespec spec;
 /*            Disable of TUI               */
 /* --------------------------------------- */
 
-#if !defined(RCAN_WINDOWS) && !defined(RCAN_MACOS) && !defined(RCAN_UNIX)
+#if ARM
 #    define TUI_CHOSECAN() CAN1
 #    define TUI_CHOISESPEED() 1000000
 #else
