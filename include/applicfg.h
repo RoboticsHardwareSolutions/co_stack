@@ -5,7 +5,10 @@
 #include <stdint.h>
 #include <string.h>
 
-#if defined(RCAN_WINDOWS) || defined(RCAN_MACOS) || defined(RCAN_UNIX)
+# define ARM !_WIN32 && !_WIN64 && !__APPLE__ && !__linux__ && !__unix__ && !__unix
+# define NOT_ARM _WIN32 || _WIN64 || __APPLE__ || __linux__ || __unix__ || __unix
+
+#if NOT_ARM
 #include <time.h>
 #include "menu.h"
 struct timespec spec;
@@ -54,8 +57,6 @@ struct timespec spec;
 #define REAL32    float
 #define REAL64 double
 
-# define ARM !RCAN_WINDOWS && !RCAN_MACOS && !RCAN_UNIX
-# define NOT_ARM RCAN_WINDOWS || RCAN_MACOS || RCAN_UNIX
 
 
 /* Definition of error and warning macros */
