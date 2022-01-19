@@ -110,7 +110,7 @@ struct timespec spec;
 /* --------------------------------------- */
 
 #if !defined(RCAN_WINDOWS) && !defined(RCAN_MACOS) && !defined(RCAN_UNIX)
-#    define TUI_CHOSECAN() CAN
+#    define TUI_CHOSECAN() CAN1
 #    define TUI_CHOISESPEED() 1000000
 #else
 #    define TUI_CHOSECAN() PCAN_USBBUS1
@@ -143,7 +143,6 @@ struct timespec spec;
 #endif
 
 #    define MSG_TIME(...) //TODO
-
 //        char str_time[50];\
 //        sprintf(str_time,  __VA_ARGS__);\
 //        tui_insert_log(str_time)
