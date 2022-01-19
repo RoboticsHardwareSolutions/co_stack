@@ -57,6 +57,8 @@ struct timespec spec;
 #define REAL32    float
 #define REAL64 double
 
+# define ARM !RCAN_WINDOWS && !RCAN_MACOS && !RCAN_UNIX
+# define NOT_ARM RCAN_WINDOWS || RCAN_MACOS || RCAN_UNIX
 
 
 /* Definition of error and warning macros */
