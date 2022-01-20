@@ -110,11 +110,16 @@ struct timespec spec;
 /* --------------------------------------- */
 
 #if ARM
-#    define TUI_CHOSECAN() CAN1
-#    define TUI_CHOISESPEED() 1000000
+    #if defined(STM32F072xB)
+    #    define TUI_CHOSECAN() CAN
+    #elif defined(STM32F103xB)
+    #    define TUI_CHOSECAN() CAN1
+    #endif
+
+    #    define TUI_CHOISESPEED() 1000000
 #else
-#    define TUI_CHOSECAN() PCAN_USBBUS1
-#    define TUI_CHOISESPEED() PCAN_BAUD_1M
+    #    define TUI_CHOSECAN() PCAN_USBBUS1
+    #    define TUI_CHOISESPEED() PCAN_BAUD_1M
 #endif
 #    define TUI_INITWIN()
 #    define TUI_DELWINDOWS()
