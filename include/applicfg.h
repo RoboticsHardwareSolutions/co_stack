@@ -110,8 +110,8 @@ struct timespec spec;
 /* --------------------------------------- */
 
 #if ARM
-    #if defined(STM32F072xB)
-    #    define TUI_CHOSECAN() CAN
+    #if defined(STM32F072xB) || defined(STM32F091xC)
+#    define TUI_CHOSECAN() CAN
     #elif defined(STM32F103xB)
     #    define TUI_CHOSECAN() CAN1
     #endif
