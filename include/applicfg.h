@@ -110,6 +110,7 @@ struct timespec spec;
 /* --------------------------------------- */
 
 #if ARM
+    // TODO delete this ! co_stack must not know about target platform
     #if defined(STM32F072xB) || defined(STM32F091xC)
 #    define TUI_CHOSECAN() CAN
     #elif defined(STM32F103xB)
@@ -178,9 +179,6 @@ struct timespec spec;
        #define dFUNCTION __FUNCTION__
    #endif
 #endif
-//typedef void *CAN_HANDLE;
-//TODO check need this fucking handle or not
-
 
 typedef void *CAN_PORT;
 
