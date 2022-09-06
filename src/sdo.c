@@ -406,6 +406,7 @@ UNS8 failedSDO (CO_Data* d, UNS8 CliServNbr, UNS8 whoami, UNS16 index,
 {
     UNS8 err;
     UNS8 line;
+    MSG_WAR(0x3A20, "FailedSDO", 0);
     err = getSDOlineOnUse( d, CliServNbr, whoami, &line );
     if (!err) { /* If a line on use have been found.*/
         MSG_WAR(0x3A20, "FailedSDO : line found : ", line);
@@ -783,7 +784,8 @@ UNS8 proceedSDO (CO_Data* d, Message *m)
         offset = d->firstIndex->SDO_CLT;
         lastIndex = d->lastIndex->SDO_CLT;
         j = 0;
-        if(offset) while (offset <= lastIndex) {
+        if(offset) {
+            while (offset <= lastIndex) {
                 if (d->objdict[offset].bSubCount <= 3) {
                     MSG_ERR(0x1A63, "Subindex 3  not found at index ", 0x1280 + j);
                     return 0xFF;
@@ -801,6 +803,7 @@ UNS8 proceedSDO (CO_Data* d, Message *m)
                 j++;
                 offset++;
             } /* end while */
+        }
     }
     if (whoami == SDO_UNKNOWN) {
         return 0xFF;/* This SDO was not for us ! */
@@ -1171,14 +1174,16 @@ UNS8 proceedSDO (CO_Data* d, Message *m)
                 if (getSDOe(m->data[0])) { /* If SDO expedited */
                     /* nb of data to be uploaded */
                     nbBytes = 4 - getSDOn2(m->data[0]);
-                    /* Storing the data in the line structure. */
+                    /* Storing the  data in the line structure. */
                     err = SDOtoLine(d, line, nbBytes, (*m).data + 4);
                     if (err) {
                         failedSDO(d, CliServNbr, whoami, index, subIndex, SDOABT_GENERAL_ERROR);
                         return 0xFF;
                     }
+
+                    LOG("nodeId %u, nbBytes %u, data %u",nodeId, nbBytes, m->data[4]);
                     /* SDO expedited -> transfer finished. data are available via  getReadResultNetworkDict(). */
-                    MSG_WAR(0x3A98, "SDO expedited upload finished. Response received from node : ", nodeId);
+                    MSG_WAR(0x3A98, "SDO expedited upload finished. node: ", nodeId);
                     StopSDO_TIMER(line)
                     d->transfers[line].count = nbBytes;
                     d->transfers[line].state = SDO_FINISHED;

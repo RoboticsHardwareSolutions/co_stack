@@ -12,7 +12,7 @@ int canReceive(CAN_PORT fd0, Message *m);
 
 int canSend(CAN_PORT fd0, Message const *m);
 
-int canClose(CO_Data *d);
+int canClose();
 
 
 #define _P(fc) case fc: MSG(#fc" ");break;

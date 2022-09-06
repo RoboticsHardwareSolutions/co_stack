@@ -92,7 +92,7 @@ UNS8 slaveSendBootUp(CO_Data* d)
   if(*d->bDeviceNodeId==0xFF)return 0;
 #endif
 
-  MSG_WAR(0x3407, "Send a Boot-Up msg ", 0);
+ 
 
   /* message configuration */
   {
@@ -102,7 +102,7 @@ UNS8 slaveSendBootUp(CO_Data* d)
   m.rtr = NOT_A_REQUEST;
   m.len = 1;
   m.data[0] = 0x00;
-
+  MSG_WAR(0x3407, "Send a Boot-Up msg ", m.cob_id);
   return canSend(d->canHandle,&m);
 }
 

@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include "menu.h"
+#include "logs.h"
 
 /*  Define the architecture : little_endian or big_endian
  -----------------------------------------------------
@@ -49,72 +49,19 @@
 /* Reals */
 #define REAL32    float
 #define REAL64 double
-
 /* Definition of error and warning macros */
 /* -------------------------------------- */
-#	define MSG(...) printf (__VA_ARGS__)
+#	define MSG(...) LOG(__VA_ARGS__)
 
 /* Definition of MSG_ERR */
 /* --------------------- */
-#ifndef TUI
-#ifdef DEBUG_ERR_CONSOLE_ON
-#    define MSG_ERR(num, str, val)            \
-          MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val);
-#else
-#    define MSG_ERR(num, str, val)
-#endif
-
-/* Definition of MSG_WAR */
-/* --------------------- */
-#ifdef DEBUG_WAR_CONSOLE_ON
-#    define MSG_WAR(num, str, val)          \
-          MSG("%s,%d : 0X%x %s 0X%x \n",__FILE__, __LINE__,num, str, val)
-#else
-#    define MSG_WAR(num, str, val)
-#endif
-
-#    define MSG_TIME(...) \
-        struct timespec spec;\
-        clock_gettime(CLOCK_REALTIME, &spec);\
-        MSG("%02jd:%02jd.%03ld: ",\
-        (spec.tv_sec % 3600) / 60, spec.tv_sec % 60, spec.tv_nsec / 1000000);\
-        printf (__VA_ARGS__);\
-        printf("\r\n")
-
-/*    Disable of TUI     */
-/* --------------------- */
-#    define TUI_CHOSECAN() PCAN_USBBUS1
-#    define TUI_CHOISESPEED() PCAN_BAUD_500K
-#    define TUI_INITWIN()
-#    define TUI_DELWINDOWS()
-#    define GETED_NMT_STATE(n_node)
-#    define TUI_MYNMTSTATE(state)
-#else
-
-#    define MSG_WAR(num, str, val)\
-        tui_insert_log(num, str, val)
-#    define MSG_ERR(num, str, val)
-#    define MSG_TIME(...)\
-//        char str_time[50];\
-//        sprintf(str_time,  __VA_ARGS__);\
-//        tui_insert_log(str_time)
-#    define MSG(...)
 
 
-
-/*     Enable of TUI     */
-/* --------------------- */
-#    define TUI_CHOSECAN() tui_choiseCAN()
-#    define TUI_CHOISESPEED() tui_choiseSpeed()
-#    define TUI_INITWIN() tui_initWindows()
-#    define TUI_DELWINDOWS() tui_delWindows()
-#    define GETED_NMT_STATE(n_node) tui_updateNMTable(n_node)
-#    define TUI_MYNMTSTATE(state) tui_NMTstate(state)
+#    define MSG_WAR(num, str, val) LOG_WAR("MSG_WAR %u %s %u\n", num, str, val)
+#    define MSG_ERR(num, str, val) LOG_ERR("MSG_ERR %u %s %u\n", num, str, val)
+#    define MSG_TIME(...)          LOG(__VA_ARGS__)
 
 
-
-
-#endif
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
 #define dFUNCTION __PRETTY_FUNCTION__

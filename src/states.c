@@ -66,19 +66,21 @@ void tmp_pdo(CO_Data* d){
                     data = tmp[0]|(tmp[1]<<8);
                     break;
                 case int32:
-                    data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
+                    // data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
+					data = tmp[3]|(tmp[2]<<8)|(tmp[1]<<16)|(tmp[0]<<24);
                     break;
                 case uint8:
                     data = tmp[0];
                     break;
                 case uint16:
-                    data = tmp[0]|(tmp[1]<<8);
+                    // data = tmp[0]|(tmp[1]<<8);
+					data = tmp[1]|(tmp[0]<<8);
                     break;
                 case uint32:
-                    data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
+                    // data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
+					data = tmp[3]|(tmp[2]<<8)|(tmp[1]<<16)|(tmp[0]<<24);
                     break;
             }
-            tui_RPDO(RPDOn, numMap, "a:0x%08x d:0x%x", READ_UNS32(d->objdict, offset, numMap + 1), data);
             numMap++;
         }
         RPDOn++;
@@ -105,7 +107,7 @@ void canDispatch(CO_Data* d, Message *m)
 					proceedSYNC(d);
 			} else 		/* EMCY */
 				if(d->CurrentCommunicationState.csEmergency)
-					proceedEMCY(d,m);
+					proceedEMCY(d, m);
 			break;
 		case TIME_STAMP:
 		case PDO1tx:
@@ -124,16 +126,16 @@ void canDispatch(CO_Data* d, Message *m)
 		case SDOtx:
 		case SDOrx:
 			if (d->CurrentCommunicationState.csSDO)
-				proceedSDO(d,m);
+				proceedSDO(d, m);
 			break;
 		case NODE_GUARD:
 			if (d->CurrentCommunicationState.csLifeGuard)
-				proceedNODE_GUARD(d,m);
+				proceedNODE_GUARD(d, m);
 			break;
 		case NMT:
 			if (*(d->iam_a_slave))
 			{
-				proceedNMTstateChange(d,m);
+				proceedNMTstateChange(d, m);
 			}
             break;
 #ifdef CO_ENABLE_LSS
@@ -247,7 +249,6 @@ UNS8 setState(CO_Data* d, e_nodeState newState)
 		}/* end switch case */
 
 	}
-    TUI_MYNMTSTATE(d->nodeState);
 	/* d->nodeState contains the final state */
 	/* may not be the requested state */
     return d->nodeState;
@@ -273,6 +274,7 @@ UNS8 getNodeId(CO_Data* d)
 **/
 void setNodeId(CO_Data* d, UNS8 nodeId)
 {
+  LOG("setNodeId");
   UNS16 offset = d->firstIndex->SDO_SVR;
 
 #ifdef CO_ENABLE_LSS
@@ -287,16 +289,18 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
 	  MSG_WAR(0x2D01, "Invalid NodeID",nodeId);
 	  return;
   }
-
+  LOG("INIT SDO, d->firstIndex->SDO_SVR %u, *d->bDeviceNodeId %08x", d->firstIndex->SDO_SVR, *d->bDeviceNodeId);
   if(offset){
     /* Adjust COB-ID Client->Server (rx) only id already set to default value or id not valid (id==0xFF)*/
     if((READ_UNS32(d->objdict, offset, 1) == ((UNS32)0x600) + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
       /* cob_id_client = 0x600 + nodeId; */
+	  LOG("Adjust COB-ID Client->Server (rx) %08x", 0x600 + nodeId);
       WRITE_UNS32(d->objdict, offset, 1, 0x600 + nodeId);
     }
     /* Adjust COB-ID Server -> Client (tx) only id already set to default value or id not valid (id==0xFF)*/
     if((READ_UNS32(d->objdict, offset, 2) == ((UNS32)0x580) + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
       /* cob_id_server = 0x580 + nodeId; */
+	  LOG("Adjust COB-ID Server -> Client (tx) %08x", 0x580 + nodeId);
       WRITE_UNS32(d->objdict, offset, 2, 0x580 + nodeId);
     }
   }
@@ -310,23 +314,30 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
   	Initialize the receive PDO communication parameters. Only for 0x1400 to 0x1403
   */
   {
+	LOG("INIT RX PDO, d->firstIndex->PDO_RCV %u", d->firstIndex->PDO_RCV);
     UNS8 i = 0;
     offset = d->firstIndex->PDO_RCV;
     UNS16 lastIndex = d->lastIndex->PDO_RCV;
     UNS32 cobID[] = {0x200, 0x300, 0x400, 0x500};
     UNS32 canID;
     UNS32 otherBits;
-    if( offset ) while( (offset <= lastIndex) && (i < 4)) {
-      canID = READ_UNS32(d->objdict, offset, 1) & 0x1fffffff;
-      otherBits = READ_UNS32(d->objdict, offset, 1) & ~0x1fffffff;
-      if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
-	      WRITE_UNS32(d->objdict, offset, 1, (cobID[i] + nodeId) | otherBits);
-      i ++;
-      offset ++;
+    if( offset ) {
+		while( (offset <= lastIndex) && (i < 4)) {
+			canID = READ_UNS32(d->objdict, offset, 1) & 0x1fffffff;
+			otherBits = READ_UNS32(d->objdict, offset, 1) & ~0x1fffffff;
+			LOG("i=%u, canID=%08x, otherBits=%08x", i , canID, otherBits);
+			if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
+				WRITE_UNS32(d->objdict, offset, 1, (cobID[i] + nodeId) | otherBits);
+				LOG("newID%08x", READ_UNS32(d->objdict, offset, 1));
+			}
+			i ++;
+			offset ++;
+	  	}
     }
   }
   /* ** Initialize the transmit PDO communication parameters. Only for 0x1800 to 0x1803 */
   {
+ 	LOG("INIT TX PDO");
     UNS8 i = 0;
     offset = d->firstIndex->PDO_TRS;
     UNS16 lastIndex = d->lastIndex->PDO_TRS;
@@ -337,19 +348,25 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
     if( offset ) while ((offset <= lastIndex) && (i < 4)) {
       canID = READ_UNS32(d->objdict, offset, 1) & 0x1fffffff;
       otherBits = READ_UNS32(d->objdict, offset, 1) & ~0x1fffffff;
+	  LOG("i=%u, canID=%08x, otherBits=%08x", i , canID, otherBits);
       if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
 	      WRITE_UNS32(d->objdict, offset, 1, (cobID[i] + nodeId) | otherBits);
+		  LOG("newID%08x", READ_UNS32(d->objdict, offset, 1));
       i ++;
       offset ++;
     }
   }
 
+	LOG("INIT EMCY *d->bDeviceNodeId %08x", *d->bDeviceNodeId );
   /* Update EMCY COB-ID if already set to default*/
-  if((*d->error_cobid == *d->bDeviceNodeId + (UNS32)0x80)||(*d->bDeviceNodeId==0xFF))
+  if((*d->error_cobid == *d->bDeviceNodeId + (UNS32)0x80)||(*d->bDeviceNodeId==0xFF)){
     *d->error_cobid = nodeId + 0x80;
-
+	LOG("NEW error_cobid=%08x", *d->error_cobid);
+  }
+  
   /* bDeviceNodeId is defined in the object dictionary. */
   *d->bDeviceNodeId = nodeId;
+  LOG("NEW bDeviceNodeId=%08x", *d->bDeviceNodeId);
 }
 
 void _initialisation(CO_Data* d){(void)d;}
