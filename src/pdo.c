@@ -193,7 +193,7 @@ proceedPDO (CO_Data * d, Message * m)
                 offsetObjdict = d->firstIndex->PDO_RCV_MAP;
                 lastIndex = d->lastIndex->PDO_RCV_MAP;
                 numMap = 0;
-                while (numMap < READ_UNS8(d->objdict, offsetObjdict, 0))
+                while (numMap < READ_UNS8(d->objdict, offsetObjdict + numPdo, 0))
                   {
                     UNS8 tmp[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
                     UNS32 ByteSize;
