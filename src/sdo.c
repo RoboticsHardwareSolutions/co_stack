@@ -1181,7 +1181,7 @@ UNS8 proceedSDO (CO_Data* d, Message *m)
                         return 0xFF;
                     }
 
-                    LOG("nodeId %u, nbBytes %u, data %u",nodeId, nbBytes, m->data[4]);
+                    MSG("nodeId %u, nbBytes %u, data %u",nodeId, nbBytes, m->data[4]);
                     /* SDO expedited -> transfer finished. data are available via  getReadResultNetworkDict(). */
                     MSG_WAR(0x3A98, "SDO expedited upload finished. node: ", nodeId);
                     StopSDO_TIMER(line)
