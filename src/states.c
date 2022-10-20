@@ -120,7 +120,7 @@ void canDispatch(CO_Data* d, Message *m)
 		case PDO4rx:
 			if (d->CurrentCommunicationState.csPDO) {
                 proceedPDO(d, m);
-                tmp_pdo(d);
+                // tmp_pdo(d);
             }
 			break;
 		case SDOtx:

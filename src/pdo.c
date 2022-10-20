@@ -137,8 +137,7 @@ sendPDOrequest (CO_Data * d, UNS16 RPDOIndex)
 **
 ** @return
 **/
-UNS8
-proceedPDO (CO_Data * d, Message * m)
+UNS8 proceedPDO (CO_Data * d, Message * m)
 {
   UNS8 numPdo;
   UNS8 numMap;                  /* Number of the mapped varable */
@@ -160,8 +159,17 @@ proceedPDO (CO_Data * d, Message * m)
   numMap = 0;
   if ((*m).rtr == NOT_A_REQUEST)
     { 
-      offsetObjdict = d->firstIndex->PDO_RCV;
-      lastIndex = d->lastIndex->PDO_RCV;
+      switch(*d->iam_a_slave){
+        case 3:
+          offsetObjdict = d->firstIndex->PDO_TRS;
+          lastIndex = d->lastIndex->PDO_TRS;
+          break;
+        default:
+          offsetObjdict = d->firstIndex->PDO_RCV;
+          lastIndex = d->lastIndex->PDO_RCV;
+          break;
+      }
+
       // MSG_WAR (0x1, "offsetObjdict ", offsetObjdict);
       // MSG_WAR (0x2, "lastIndex     ", lastIndex);
       if (offsetObjdict)
@@ -175,7 +183,15 @@ proceedPDO (CO_Data * d, Message * m)
                   {
                     /* The cobId is recognized */
                     status = state4;
-                    MSG_WAR (0x3936, "cobId found at index ", 0x1400 + numPdo);
+                    switch(*d->iam_a_slave){
+                      case 3:
+                        MSG_WAR (0x3936, "cobId found at index ", 0x1800 + numPdo);
+                        break;
+                      default:
+                        MSG_WAR (0x3936, "cobId found at index ", 0x1400 + numPdo);
+                        break;
+                    }
+                    
                     break;
                   }
                 else
@@ -190,58 +206,67 @@ proceedPDO (CO_Data * d, Message * m)
               case state4:     /* Get Mapped Objects Number */
                 /* The cobId of the message received has been found in the
                    dictionnary. */
-                offsetObjdict = d->firstIndex->PDO_RCV_MAP;
-                lastIndex = d->lastIndex->PDO_RCV_MAP;
+                switch(*d->iam_a_slave){
+                  case 3:
+                    offsetObjdict = d->firstIndex->PDO_TRS_MAP;
+                    lastIndex = d->lastIndex->PDO_TRS_MAP;
+                    break;
+                  default:
+                    offsetObjdict = d->firstIndex->PDO_RCV_MAP;
+                    lastIndex = d->lastIndex->PDO_RCV_MAP;
+                    break;
+                }
+                
                 numMap = 0;
                 while (numMap < READ_UNS8(d->objdict, offsetObjdict + numPdo, 0))
+                {
+                  UNS8 tmp[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
+                  UNS32 ByteSize;
+                  if (IS_NULL(d->objdict, offsetObjdict + numPdo, numMap + 1))
                   {
-                    UNS8 tmp[] = { 0, 0, 0, 0, 0, 0, 0, 0 };
-                    UNS32 ByteSize;
-                    if (IS_NULL(d->objdict, offsetObjdict + numPdo, numMap + 1))
-                      {
-                        MSG_ERR (0x1937, "Couldn't get mapping parameter : ", numMap + 1);
-                        return 0xFF;
-                      }
+                    MSG_ERR (0x1937, "Couldn't get mapping parameter : ", numMap + 1);
+                    return 0xFF;
+                  }
 
-                    UNS32 mappingParameter = READ_UNS32(d->objdict, offsetObjdict + numPdo, numMap + 1);
-                    /* Get the addresse of the mapped variable. */
-                    /* detail of *pMappingParameter : */
-                    /* The 16 hight bits contains the index, the medium 8 bits
-                       contains the subindex, */
-                    /* and the lower 8 bits contains the size of the mapped
-                       variable. */
+                  UNS32 mappingParameter = READ_UNS32(d->objdict, offsetObjdict + numPdo, numMap + 1);
+                  /* Get the addresse of the mapped variable. */
+                  /* detail of *pMappingParameter : */
+                  /* The 16 hight bits contains the index, the medium 8 bits
+                      contains the subindex, */
+                  /* and the lower 8 bits contains the size of the mapped
+                      variable. */
 
-                    Size = (UNS8) (mappingParameter & (UNS32) 0x000000FF);
+                  Size = (UNS8) (mappingParameter & (UNS32) 0x000000FF);
+                  MSG_WAR (0x1936, "mappingParameter : ", mappingParameter);
+                  /* set variable only if Size != 0 and 
+                    * Size is lower than remaining bits in the PDO */
+                  if (Size && ((offset + Size) <= (m->len << 3)))
+                  {
+                    /* copy bit per bit in little endian */
+                    CopyBits (Size, (UNS8 *) & m->data[offset >> 3], offset % 8, 0, ((UNS8 *) tmp), 0, 0);
+                    /*1->8 => 1 ; 9->16 =>2, ... */
+                    ByteSize = (UNS32)(1 + ((Size - 1) >> 3));
 
-                    /* set variable only if Size != 0 and 
-                     * Size is lower than remaining bits in the PDO */
-                    if (Size && ((offset + Size) <= (m->len << 3)))
-                      {
-                        /* copy bit per bit in little endian */
-                        CopyBits (Size, (UNS8 *) & m->data[offset >> 3], offset % 8, 0, ((UNS8 *) tmp), 0, 0);
-                        /*1->8 => 1 ; 9->16 =>2, ... */
-                        ByteSize = (UNS32)(1 + ((Size - 1) >> 3));
+                    objDict = setODentry (d, 
+                                          (UNS16) (mappingParameter >> 16),
+                                          (UNS8) ((mappingParameter >> 8) & 0xFF), 
+                                          tmp, &ByteSize, 0);
 
-                        objDict = setODentry (d, 
-                                              (UNS16) (mappingParameter >> 16),
-                                              (UNS8) ((mappingParameter >> 8) & 0xFF), 
-                                              tmp, &ByteSize, 0);
+                    if (objDict != OD_SUCCESSFUL)
+                    {
+                      MSG_ERR (0x1938, "error accessing to the mapped var : ", numMap + 1);
+                      MSG_WAR (0x2939, "Mapped at index : ", mappingParameter >> 16);
+                      MSG_WAR (0x2940, "subindex : ", (mappingParameter >> 8) & 0xFF);
+                      return 0xFF;
+                    }
 
-                        if (objDict != OD_SUCCESSFUL)
-                          {
-                            MSG_ERR (0x1938, "error accessing to the mapped var : ", numMap + 1);
-                            MSG_WAR (0x2939, "Mapped at index : ", mappingParameter >> 16);
-                            MSG_WAR (0x2940, "subindex : ", (mappingParameter >> 8) & 0xFF);
-                            return 0xFF;
-                          }
-
-                        MSG_WAR (0x3942, "Variable updated by PDO cobid : ", UNS16_LE(m->cob_id));
-                        MSG_WAR (0x3943, "Mapped at index : ", mappingParameter >> 16);
-                        MSG_WAR (0x3944, "subindex : ", (mappingParameter >> 8) & 0xFF);
-                        offset += Size;
-                      }
-                    numMap++;
-                  }             /* end loop while on mapped variables */
+                    MSG_WAR (0x3942, "Variable updated by PDO cobid : ", UNS16_LE(m->cob_id));
+                    MSG_WAR (0x3943, "Mapped at index : ", mappingParameter >> 16);
+                    MSG_WAR (0x3944, "subindex : ", (mappingParameter >> 8) & 0xFF);
+                    offset += Size;
+                  }
+                  numMap++;
+                }             /* end loop while on mapped variables */
                 if (d->RxPDO_EventTimers)
                 {
                     TIMEVAL EventTimerDuration = READ_UNS16(d->objdict, offsetObjdict, 5);
@@ -260,6 +285,7 @@ proceedPDO (CO_Data * d, Message * m)
     {
       MSG_WAR (0x3946, "Receive a PDO request cobId : ", UNS16_LE(m->cob_id));
       status = state1;
+      
       offsetObjdict = d->firstIndex->PDO_TRS;
       lastIndex = d->lastIndex->PDO_TRS;
       if (offsetObjdict)
@@ -577,8 +603,9 @@ _sendPDOevent (CO_Data * d, UNS8 isSyncEvent)
     {
       return 0;
     }
-
-
+  MSG("_sendPDOevent()");
+  if(*d->iam_a_slave == 3)
+    offsetObjdict = 0;
   /* study all PDO stored in the objects dictionary */
   if (offsetObjdict)
     {
@@ -738,6 +765,10 @@ PDOInit (CO_Data * d)
 
   UNS16 offsetObjdict = d->firstIndex->PDO_TRS;
   UNS16 lastIndex = d->lastIndex->PDO_TRS;
+  MSG("PDOInit()");
+  if(*d->iam_a_slave == 3)
+    return;
+    // offsetObjdict = 0;
   if (offsetObjdict)
     while (offsetObjdict <= lastIndex)
       {
