@@ -87,7 +87,13 @@ void proceedNMTstateChange(CO_Data* d, Message *m)
 UNS8 slaveSendBootUp(CO_Data* d)
 {
   Message m;
-
+  switch(*d->device_type){
+    case DEVICE_TYPE_SLAVE:
+      break;
+    default:
+      return 0;
+      break;
+  }
 #ifdef CO_ENABLE_LSS
   if(*d->bDeviceNodeId==0xFF)return 0;
 #endif

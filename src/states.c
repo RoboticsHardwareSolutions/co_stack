@@ -133,7 +133,7 @@ void canDispatch(CO_Data* d, Message *m)
 				proceedNODE_GUARD(d, m);
 			break;
 		case NMT:
-			if (*(d->iam_a_slave))
+			if (*(d->device_type))
 			{
 				proceedNMTstateChange(d, m);
 			}
@@ -141,11 +141,11 @@ void canDispatch(CO_Data* d, Message *m)
 #ifdef CO_ENABLE_LSS
 		case LSS:
 			if (!d->CurrentCommunicationState.csLSS)break;
-			if ((*(d->iam_a_slave)) && cob_id==MLSS_ADRESS)
+			if ((*(d->device_type)) && cob_id==MLSS_ADRESS)
 			{
 				proceedLSS_Slave(d,m);
 			}
-			else if(!(*(d->iam_a_slave)) && cob_id==SLSS_ADRESS)
+			else if(!(*(d->device_type)) && cob_id==SLSS_ADRESS)
 			{
 				proceedLSS_Master(d,m);
 			}
@@ -371,7 +371,7 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
 
 void _initialisation(CO_Data* d){(void)d;}
 void _preOperational(CO_Data* d){
-    if (!(*(d->iam_a_slave)))
+    if (!(*(d->device_type)))
     {
         masterSendNMTstateChange (d, 0, NMT_Reset_Node);
     }

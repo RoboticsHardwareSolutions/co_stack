@@ -152,7 +152,7 @@ void LssAlarmSDELAY(CO_Data* d, UNS32 id)
     	d->lss_transfer.switchDelayState=SDELAY_OFF;
     	StopLSS_SDELAY_TIMER();
     		
-    	if (*(d->iam_a_slave))
+    	if (*(d->device_type))
     		d->canHandle=d->lss_transfer.canHandle_t;
     	else{
     		d->lss_transfer.dat1=0;
@@ -510,7 +510,7 @@ UNS8 sendLSS(CO_Data* d, UNS8 command,void *dat1,void *dat2)
   UNS8 res=1;
   
   /* Tha data sent with the msg depends on the command and if the sender is a master or a slave */
-  if (*(d->iam_a_slave)){ 
+  if (*(d->device_type)){ 
   	res = sendSlaveLSSMessage(d, command,dat1,dat2);
   }
   else {/* It is a Master */

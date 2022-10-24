@@ -49,8 +49,8 @@
     
 /** Status of the SDO transmission
  */
-#define SDO_RESET                0x0      /* Transmission not started. Init state. */
-#define SDO_FINISHED             0x1      /* data are available */                          
+#define  SDO_RESET                0x0      /* Transmission not started. Init state. */
+#define  SDO_FINISHED             0x1      /* data are available */                          
 #define	SDO_ABORTED_RCV          0x80     /* Received an abort message. Data not available */
 #define	SDO_ABORTED_INTERNAL     0x85     /* Aborted but not because of an abort message. */
 #define	SDO_DOWNLOAD_IN_PROGRESS 0x2 
@@ -108,7 +108,7 @@
    ---------------
   defined in the canopen DS301 
 */
-#define NMT	   0x0
+#define NMT	       0x0
 #define SYNC       0x1
 #define TIME_STAMP 0x2
 #define PDO1tx     0x3
@@ -122,7 +122,7 @@
 #define SDOtx      0xB
 #define SDOrx      0xC
 #define NODE_GUARD 0xE
-#define LSS 	   0xF
+#define LSS 	    0xF
 
 /* NMT Command Specifier, sent by master to change a slave state */
 /* ------------------------------------------------------------- */
@@ -135,8 +135,8 @@
 
 /** Status of the LSS transmission
  */
-#define LSS_RESET                0x0      /* Transmission not started. Init state. */
-#define LSS_FINISHED             0x1      /* data are available */                          
+#define LSS_RESET                 0x0      /* Transmission not started. Init state. */
+#define LSS_FINISHED              0x1      /* data are available */                          
 #define	LSS_ABORTED_INTERNAL     0x2     /* Aborted but not because of an abort message. */
 #define	LSS_TRANS_IN_PROGRESS 	 0x3    
 
@@ -154,6 +154,10 @@
 #define state9  0x09
 #define state10 0x0A
 #define state11 0x0B
+
+#define DEVICE_TYPE_MASTER 0
+#define DEVICE_TYPE_SLAVE  1
+#define DEVICE_TYPE_MIRROR 3
 
 #endif /* __def_h__ */
 

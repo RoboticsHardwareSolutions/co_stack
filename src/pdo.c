@@ -159,8 +159,8 @@ UNS8 proceedPDO (CO_Data * d, Message * m)
   numMap = 0;
   if ((*m).rtr == NOT_A_REQUEST)
     { 
-      switch(*d->iam_a_slave){
-        case 3:
+      switch(*d->device_type){
+        case DEVICE_TYPE_MIRROR:
           offsetObjdict = d->firstIndex->PDO_TRS;
           lastIndex = d->lastIndex->PDO_TRS;
           break;
@@ -183,8 +183,8 @@ UNS8 proceedPDO (CO_Data * d, Message * m)
                   {
                     /* The cobId is recognized */
                     status = state4;
-                    switch(*d->iam_a_slave){
-                      case 3:
+                    switch(*d->device_type){
+                      case DEVICE_TYPE_MIRROR:
                         MSG_WAR (0x3936, "cobId found at index ", 0x1800 + numPdo);
                         break;
                       default:
@@ -206,8 +206,8 @@ UNS8 proceedPDO (CO_Data * d, Message * m)
               case state4:     /* Get Mapped Objects Number */
                 /* The cobId of the message received has been found in the
                    dictionnary. */
-                switch(*d->iam_a_slave){
-                  case 3:
+                switch(*d->device_type){
+                  case DEVICE_TYPE_MIRROR:
                     offsetObjdict = d->firstIndex->PDO_TRS_MAP;
                     lastIndex = d->lastIndex->PDO_TRS_MAP;
                     break;
@@ -604,7 +604,7 @@ _sendPDOevent (CO_Data * d, UNS8 isSyncEvent)
       return 0;
     }
   MSG("_sendPDOevent()");
-  if(*d->iam_a_slave == 3)
+  if(*d->device_type == 3)
     offsetObjdict = 0;
   /* study all PDO stored in the objects dictionary */
   if (offsetObjdict)
@@ -766,7 +766,7 @@ PDOInit (CO_Data * d)
   UNS16 offsetObjdict = d->firstIndex->PDO_TRS;
   UNS16 lastIndex = d->lastIndex->PDO_TRS;
   MSG("PDOInit()");
-  if(*d->iam_a_slave == 3)
+  if(*d->device_type == 3)
     return;
     // offsetObjdict = 0;
   if (offsetObjdict)

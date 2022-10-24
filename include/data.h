@@ -36,7 +36,7 @@ struct struct_CO_Data {
 	const CONSTSTORE quick_index *firstIndex;
 	const CONSTSTORE quick_index *lastIndex;
 	const CONSTSTORE UNS16 *ObjdictSize;
-	const UNS8 *iam_a_slave;
+	const UNS8 *device_type;
 	valueRangeTest_t valueRangeTest;
 	
 	/* SDO */
@@ -231,7 +231,7 @@ struct struct_CO_Data {
 	& NODE_PREFIX ## _firstIndex,        /* firstIndex */\
 	& NODE_PREFIX ## _lastIndex,         /* lastIndex */\
 	& NODE_PREFIX ## _ObjdictSize,       /* ObjdictSize */\
-	& NODE_PREFIX ## _iam_a_slave,       /* iam_a_slave */\
+	& NODE_PREFIX ## _device_type,       /* device_type */\
 	NODE_PREFIX ## _valueRangeTest,      /* valueRangeTest */\
 	\
 	/* SDO, structure s_transfer */\
