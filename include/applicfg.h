@@ -5,7 +5,7 @@
 #include <stdint.h>
 #include <string.h>
 #include <time.h>
-#include "logs.h"
+
 
 /*  Define the architecture : little_endian or big_endian
  -----------------------------------------------------
@@ -51,6 +51,7 @@
 #define REAL64 double
 
 #ifdef CO_STACK_DEBUG_ENABLE
+    #include "logs.h"
 /* Definition of error and warning macros */
 /* -------------------------------------- */
     #define MSG(...) LOG(__VA_ARGS__)

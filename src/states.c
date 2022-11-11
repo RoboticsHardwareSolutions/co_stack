@@ -274,7 +274,7 @@ UNS8 getNodeId(CO_Data* d)
 **/
 void setNodeId(CO_Data* d, UNS8 nodeId)
 {
-  LOG("setNodeId");
+  MSG("setNodeId");
   UNS16 offset = d->firstIndex->SDO_SVR;
 
 #ifdef CO_ENABLE_LSS
@@ -289,18 +289,18 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
 	  MSG_WAR(0x2D01, "Invalid NodeID",nodeId);
 	  return;
   }
-  LOG("INIT SDO, d->firstIndex->SDO_SVR %u, *d->bDeviceNodeId %08x", d->firstIndex->SDO_SVR, *d->bDeviceNodeId);
+  MSG("INIT SDO, d->firstIndex->SDO_SVR %u, *d->bDeviceNodeId %08x", d->firstIndex->SDO_SVR, *d->bDeviceNodeId);
   if(offset){
     /* Adjust COB-ID Client->Server (rx) only id already set to default value or id not valid (id==0xFF)*/
     if((READ_UNS32(d->objdict, offset, 1) == ((UNS32)0x600) + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
       /* cob_id_client = 0x600 + nodeId; */
-	  LOG("Adjust COB-ID Client->Server (rx) %08x", 0x600 + nodeId);
+	  MSG("Adjust COB-ID Client->Server (rx) %08x", 0x600 + nodeId);
       WRITE_UNS32(d->objdict, offset, 1, 0x600 + nodeId);
     }
     /* Adjust COB-ID Server -> Client (tx) only id already set to default value or id not valid (id==0xFF)*/
     if((READ_UNS32(d->objdict, offset, 2) == ((UNS32)0x580) + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
       /* cob_id_server = 0x580 + nodeId; */
-	  LOG("Adjust COB-ID Server -> Client (tx) %08x", 0x580 + nodeId);
+	  MSG("Adjust COB-ID Server -> Client (tx) %08x", 0x580 + nodeId);
       WRITE_UNS32(d->objdict, offset, 2, 0x580 + nodeId);
     }
   }
@@ -314,7 +314,7 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
   	Initialize the receive PDO communication parameters. Only for 0x1400 to 0x1403
   */
   {
-	LOG("INIT RX PDO, d->firstIndex->PDO_RCV %u", d->firstIndex->PDO_RCV);
+	MSG("INIT RX PDO, d->firstIndex->PDO_RCV %u", d->firstIndex->PDO_RCV);
     UNS8 i = 0;
     offset = d->firstIndex->PDO_RCV;
     UNS16 lastIndex = d->lastIndex->PDO_RCV;
@@ -325,10 +325,10 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
 		while( (offset <= lastIndex) && (i < 4)) {
 			canID = READ_UNS32(d->objdict, offset, 1) & 0x1fffffff;
 			otherBits = READ_UNS32(d->objdict, offset, 1) & ~0x1fffffff;
-			LOG("i=%u, canID=%08x, otherBits=%08x", i , canID, otherBits);
+			MSG("i=%u, canID=%08x, otherBits=%08x", i , canID, otherBits);
 			if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF)){
 				WRITE_UNS32(d->objdict, offset, 1, (cobID[i] + nodeId) | otherBits);
-				LOG("newID%08x", READ_UNS32(d->objdict, offset, 1));
+				MSG("newID%08x", READ_UNS32(d->objdict, offset, 1));
 			}
 			i ++;
 			offset ++;
@@ -337,7 +337,7 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
   }
   /* ** Initialize the transmit PDO communication parameters. Only for 0x1800 to 0x1803 */
   {
- 	LOG("INIT TX PDO");
+ 	MSG("INIT TX PDO");
     UNS8 i = 0;
     offset = d->firstIndex->PDO_TRS;
     UNS16 lastIndex = d->lastIndex->PDO_TRS;
@@ -348,25 +348,25 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
     if( offset ) while ((offset <= lastIndex) && (i < 4)) {
       canID = READ_UNS32(d->objdict, offset, 1) & 0x1fffffff;
       otherBits = READ_UNS32(d->objdict, offset, 1) & ~0x1fffffff;
-	  LOG("i=%u, canID=%08x, otherBits=%08x", i , canID, otherBits);
+	  MSG("i=%u, canID=%08x, otherBits=%08x", i , canID, otherBits);
       if((canID == cobID[i] + *d->bDeviceNodeId)||(*d->bDeviceNodeId==0xFF))
 	      WRITE_UNS32(d->objdict, offset, 1, (cobID[i] + nodeId) | otherBits);
-		  LOG("newID%08x", READ_UNS32(d->objdict, offset, 1));
+		  MSG("newID%08x", READ_UNS32(d->objdict, offset, 1));
       i ++;
       offset ++;
     }
   }
 
-	LOG("INIT EMCY *d->bDeviceNodeId %08x", *d->bDeviceNodeId );
+	MSG("INIT EMCY *d->bDeviceNodeId %08x", *d->bDeviceNodeId );
   /* Update EMCY COB-ID if already set to default*/
   if((*d->error_cobid == *d->bDeviceNodeId + (UNS32)0x80)||(*d->bDeviceNodeId==0xFF)){
     *d->error_cobid = nodeId + 0x80;
-	LOG("NEW error_cobid=%08x", *d->error_cobid);
+	MSG("NEW error_cobid=%08x", *d->error_cobid);
   }
   
   /* bDeviceNodeId is defined in the object dictionary. */
   *d->bDeviceNodeId = nodeId;
-  LOG("NEW bDeviceNodeId=%08x", *d->bDeviceNodeId);
+  MSG("NEW bDeviceNodeId=%08x", *d->bDeviceNodeId);
 }
 
 void _initialisation(CO_Data* d){(void)d;}
