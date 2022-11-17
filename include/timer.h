@@ -1,21 +1,13 @@
-
-
 #ifndef __timer_h__
 #define __timer_h__
 
-#include <timerscfg.h>
-#include <applicfg.h>
+#include "timerscfg.h"
+#include "applicfg.h"
+#include "data.h"
 
 typedef struct struct_CO_Data CO_Data;
-#define TIMER_HANDLE INTEGER16
-
 /* --------- types and constants definitions --------- */
-#define TIMER_FREE 0
-#define TIMER_ARMED 1
-#define TIMER_TRIG 2
-#define TIMER_TRIG_PERIOD 3
 
-#define TIMER_NONE -1
 
 typedef void (*TimerCallback_t)(CO_Data* d, UNS32 id);
 

@@ -4,7 +4,7 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-
+#include "timer_handle.h"
 #include "applicfg.h"
 #include "def.h"
 #include "can.h"

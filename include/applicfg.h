@@ -84,5 +84,6 @@
 
 
 typedef void *CAN_PORT;
+// typedef struct struct_CO_Data CO_Data;
 
 #endif

@@ -1,6 +1,6 @@
 #ifndef __TIMERSCFG_H__
 #define __TIMERSCFG_H__
-
+#include "timer_handle.h"
 // Whatever your microcontroller, the timer wont work if
 // TIMEVAL is not at least on 32 bits
 #define TIMEVAL UNS32
