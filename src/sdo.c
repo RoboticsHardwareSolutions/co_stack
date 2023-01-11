@@ -20,6 +20,8 @@
 #include "can_driver.h"
 #include "data.h"
 #include "objaccessinternal.h"
+#include "timerscfg.h"
+#include "timer.h"
 
 /* Uncomment if your compiler does not support inline functions */
 #define NO_INLINE

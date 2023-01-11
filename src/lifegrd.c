@@ -15,6 +15,7 @@
 #include "sysdep.h"
 #include "config.h"
 #include "can_driver.h"
+#include "timerscfg.h"
 
 void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id);
 
