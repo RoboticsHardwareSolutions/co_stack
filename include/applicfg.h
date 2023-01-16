@@ -50,8 +50,8 @@
 #define REAL32 float
 #define REAL64 double
 
-#ifdef CO_STACK_DEBUG_ENABLE
-    #include "logs.h"
+
+
 /* Definition of error and warning macros */
 /* -------------------------------------- */
     #define MSG(...) LOG(__VA_ARGS__)
@@ -79,9 +79,6 @@
        #define dFUNCTION __FUNCTION__
    #endif
 #endif
-//typedef void *CAN_HANDLE;
-//TODO check need this fucking handle or not
-
 
 typedef void *CAN_PORT;
 // typedef struct struct_CO_Data CO_Data;

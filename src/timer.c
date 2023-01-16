@@ -16,7 +16,7 @@
 #include "config.h"
 
 /*  ---------  The timer table --------- */
-s_timer_entry timers[MAX_NB_TIMER] = {{TIMER_FREE, NULL, NULL, 0, 0, 0, "noname"},};
+s_timer_entry timers[MAX_NB_TIMER] = {{TIMER_FREE, NULL, NULL, 0, 0, 0},};
 
 TIMEVAL total_sleep_time = TIMEVAL_MAX;
 TIMER_HANDLE last_timer_raw = -1;
@@ -43,7 +43,7 @@ TIMER_HANDLE last_timer_raw = -1;
 **
 ** @return
 **/
-TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL value, TIMEVAL period, char *name)
+TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL value, TIMEVAL period)
 {
 	TIMER_HANDLE row_number;
 	s_timer_entry *row;
@@ -75,7 +75,6 @@ TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL va
 			row->val = value + elapsed_time;
 			row->interval = period;
 			row->state = TIMER_ARMED;
-			strcpy(row->name, name);
 			D_MSG_TIME("Set timer %s, after %d us", name, value + elapsed_time);
 			return row_number;
 		}
@@ -101,7 +100,6 @@ TIMER_HANDLE DelAlarm(TIMER_HANDLE handle)
 			last_timer_raw--;
 		timers[handle].state = TIMER_FREE;
 		D_MSG_TIME("Delete timer %s", timers[handle].name);
-		strcpy(timers[handle].name, "*del*");
 	}
 	return TIMER_NONE;
 }

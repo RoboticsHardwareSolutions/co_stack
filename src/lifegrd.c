@@ -52,6 +52,10 @@ void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id) {
 
     /* set node state */
     d->NMTable[nodeId] = Disconnected;
+<<<<<<< HEAD
+=======
+    GETED_NMT_STATE((int *)d->NMTable);
+>>>>>>> master
     /*! call heartbeat error with NodeId */
     (*d->heartbeatError)(d, nodeId);
 }
@@ -136,15 +140,15 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
                     TIMEVAL time = ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
                     /* Renew alarm for next heartbeat. */
                     DelAlarm(d->ConsumerHeartBeatTimers[index]);
-                    char res[20];
-                    sprintf(res,"%s%d","HeartBeat_",(UNS8) (((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x00FF0000)
-                                                                    >> (UNS8) 16));
-                    d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time),
-                                                                 0, res);
+                    d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time),0);
                 }
             }
         }
 
+<<<<<<< HEAD
+=======
+        GETED_NMT_STATE((int *)d->NMTable);
+>>>>>>> master
     }
 }
 
@@ -269,7 +273,7 @@ UNS32 OnHeartbeatProducerUpdate(CO_Data *d, UNS16 unused_indextable, UNS8 unused
     d->ProducerHeartBeatTimer = DelAlarm(d->ProducerHeartBeatTimer);
     if (*d->ProducerHeartBeatTime) {
         TIMEVAL time = *d->ProducerHeartBeatTime;
-        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, 0, MS_TO_TIMEVAL(time), "ProducerHB");
+        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, 0, MS_TO_TIMEVAL(time));
     }
     return 0;
 }
@@ -285,15 +289,19 @@ void heartbeatInit(CO_Data *d) {
     for (index = (UNS8) 0x00; index < *d->ConsumerHeartbeatCount; index++) {
         TIMEVAL time = (UNS16) ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
         if (time) {
+<<<<<<< HEAD
             char res[20];
             sprintf(res,"%s%d","HeartBeat_",(UNS8) (((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x00FF0000) >> (UNS8) 16));
             d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0, res);
+=======
+            d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0);
+>>>>>>> master
         }
     }
 
     if (*d->ProducerHeartBeatTime) {
         TIMEVAL time = *d->ProducerHeartBeatTime;
-        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time), "ProducerHB");
+        d->ProducerHeartBeatTimer = SetAlarm(d, 0, &ProducerHeartbeatAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time));
     }
 }
 
@@ -307,7 +315,7 @@ void nodeguardInit(CO_Data *d) {
         UNS8 i;
 
         TIMEVAL time = *d->GuardTime;
-        d->GuardTimeTimer = SetAlarm(d, 0, &GuardTimeAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time), "GuardTimeTimer");
+        d->GuardTimeTimer = SetAlarm(d, 0, &GuardTimeAlarm, MS_TO_TIMEVAL(time), MS_TO_TIMEVAL(time));
         MSG_WAR(0x0, "GuardTime: ", time);
 
         for (i = 0; i < NMT_MAX_NODE_ID; i++) {
