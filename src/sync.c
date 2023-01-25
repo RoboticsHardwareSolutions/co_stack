@@ -13,6 +13,9 @@
 #include "can_driver.h"
 #include "sysdep.h"
 #include "objaccessinternal.h"
+#include "timerscfg.h"
+#include "timer.h"
+
 
 /* Prototypes for internals functions */
 
