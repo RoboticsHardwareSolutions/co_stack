@@ -15,7 +15,7 @@
 //struct struct_s_transfer;
 
 #include "config.h"
-#include "timer_handle.h"
+#include "timerscfg.h"
 
 typedef struct struct_CO_Data CO_Data;
 typedef struct Message Message;
