@@ -51,7 +51,7 @@
 #define REAL64 double
 
 
-
+#ifdef CO_STACK_DEBUG_ENABLE
 /* Definition of error and warning macros */
 /* -------------------------------------- */
     #define MSG(...) LOG(__VA_ARGS__)
@@ -73,11 +73,11 @@
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
 #define dFUNCTION __PRETTY_FUNCTION__
 #else
-#ifdef _MSC_VER
-       #define dFUNCTION __FUNCSIG__
-   #else
-       #define dFUNCTION __FUNCTION__
-   #endif
+    #ifdef _MSC_VER
+        #define dFUNCTION __FUNCSIG__
+    #else
+        #define dFUNCTION __FUNCTION__
+    #endif
 #endif
 
 typedef void *CAN_PORT;

@@ -54,10 +54,6 @@ void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id) {
 
     /* set node state */
     d->NMTable[nodeId] = Disconnected;
-<<<<<<< HEAD
-=======
-    GETED_NMT_STATE((int *)d->NMTable);
->>>>>>> master
     /*! call heartbeat error with NodeId */
     (*d->heartbeatError)(d, nodeId);
 }
@@ -147,10 +143,6 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             }
         }
 
-<<<<<<< HEAD
-=======
-        GETED_NMT_STATE((int *)d->NMTable);
->>>>>>> master
     }
 }
 
@@ -291,13 +283,7 @@ void heartbeatInit(CO_Data *d) {
     for (index = (UNS8) 0x00; index < *d->ConsumerHeartbeatCount; index++) {
         TIMEVAL time = (UNS16) ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
         if (time) {
-<<<<<<< HEAD
-            char res[20];
-            sprintf(res,"%s%d","HeartBeat_",(UNS8) (((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x00FF0000) >> (UNS8) 16));
-            d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0, res);
-=======
             d->ConsumerHeartBeatTimers[index] = SetAlarm(d, index, &ConsumerHeartbeatAlarm, MS_TO_TIMEVAL(time), 0);
->>>>>>> master
         }
     }
 
