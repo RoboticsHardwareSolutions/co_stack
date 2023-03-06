@@ -4,10 +4,9 @@
 #ifdef __cplusplus
 extern "C" {
 #endif
-#include "timer_handle.h"
 #include "applicfg.h"
 #include "def.h"
-#include "can.h"
+#include "co_can.h"
 #include "objdictdef.h"
 #include "objacces.h"
 #include "sdo.h"
@@ -18,6 +17,7 @@ extern "C" {
 #include "nmtSlave.h"
 #include "nmtMaster.h"
 #include "emcy.h"
+#include "timerscfg.h"
 #ifdef CO_ENABLE_LSS
 #include "lss.h"
 #endif

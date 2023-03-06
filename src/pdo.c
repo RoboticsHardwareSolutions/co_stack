@@ -3,6 +3,8 @@
 #include "sysdep.h"
 #include "objaccessinternal.h"
 #include "can_driver.h"
+#include "timerscfg.h"
+#include "timer.h"
 
 /*!
 ** @file   pdo.c

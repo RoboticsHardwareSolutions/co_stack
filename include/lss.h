@@ -59,7 +59,7 @@
 
 #include "applicfg.h"
 #include "timer.h"
-#include "can.h"
+#include "co_can.h"
 
 typedef struct struct_CO_Data CO_Data;
 
