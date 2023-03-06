@@ -9,9 +9,8 @@
 
 #include <applicfg.h>
 #include <def.h>
-
-#include "can.h"
-#include "timer_handle.h"
+#include "timerscfg.h"
+#include "co_can.h"
 
 typedef struct struct_s_PDO_status s_PDO_status;
 typedef struct struct_CO_Data CO_Data;
