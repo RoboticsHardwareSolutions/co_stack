@@ -6,7 +6,7 @@ extern "C" {
 #endif
 #include "applicfg.h"
 #include "def.h"
-#include "can.h"
+#include "co_can.h"
 #include "objdictdef.h"
 #include "objacces.h"
 #include "sdo.h"

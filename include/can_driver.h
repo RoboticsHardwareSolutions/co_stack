@@ -2,7 +2,7 @@
 #define __CAN_DRIVER_H
 
 #include "def.h"
-#include "can.h"
+#include "co_can.h"
 
 
 

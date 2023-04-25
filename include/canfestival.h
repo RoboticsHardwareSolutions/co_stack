@@ -2,7 +2,7 @@
 #define  __CANFESTIVAL_H
 
 #include "applicfg.h"
-#include "can.h"
+#include "co_can.h"
 #include "dcf.h"
 
 
