@@ -6,7 +6,7 @@
 #define SDO_BLOCK_SIZE 16
 #define SDO_MAX_SIMULTANEOUS_TRANSFERS 4
 #define NMT_MAX_NODE_ID 128
-#define SDO_TIMEOUT_MS 3000
+#define SDO_TIMEOUT_MS 250
 #define MAX_NB_TIMER 32
 /* CANOPEN_BIG_ENDIAN is not defined */
 /* US_TO_TIMEVAL_FACTOR is not defined */
