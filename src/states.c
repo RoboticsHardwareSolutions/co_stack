@@ -23,120 +23,65 @@
 void switchCommunicationState(CO_Data* d,
 	s_state_communication *newCommunicationState);
 
-/*!                                                                                                
-**                                                                                                 
-**                                                                                                 
-** @param d                                                                                        
-**                                                                                                 
-** @return                                                                                         
+/*!
+**
+**
+** @param d
+**
+** @return
 **/
 e_nodeState getState(CO_Data* d)
 {
-  return d->nodeState;
+    return d->nodeState;
 }
 
-
-void tmp_pdo(CO_Data* d){
-    UNS16 offset = d->firstIndex->PDO_RCV_MAP;
-    UNS16 lastIndex = d->lastIndex->PDO_RCV_MAP;
-    UNS8 RPDOn = 0;
-    while(offset <= lastIndex) {
-        int numMap = 0;
-        while (numMap < READ_UNS8(d->objdict, offset, 0)){
-
-            UNS32 mappingParameter = READ_UNS32(d->objdict, offset, numMap + 1);
-            UNS16 index = (UNS16) (mappingParameter >> 16);
-            UNS32 Size = (UNS32) (mappingParameter & (UNS32) 0x000000FF);     /* Size in bits */
-            UNS32 ByteSize = 1 + ((Size - 1) >> 3);
-            UNS8 subIndex = (UNS8) (((mappingParameter) >> (UNS8) 8) & (UNS32) 0x000000FF);
-
-            UNS8 dataType;            /* Unused */
-            UNS8 tmp[] = { 0, 0, 0, 0, 0, 0, 0, 0 };  /* temporary space to hold bits */
-
-            MSG_WAR (0x300F, "  got mapping parameter : ", mappingParameter);
-            //MSG_WAR (0x3050, "    at index : ", ObjDict_Data.objdict[ObjDict_Data.firstIndex->PDO_TRS_MAP].index);
-            MSG_WAR (0x3051, "    sub-index : ", numMap + 1);
-            int data = 0;
-            getODentry (d, index, subIndex, tmp, &ByteSize, &dataType, 0);
-            switch(dataType) {
-                case int8:
-                    data = tmp[0];
-                    break;
-                case int16:
-                    data = tmp[0]|(tmp[1]<<8);
-                    break;
-                case int32:
-                    // data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
-					data = tmp[3]|(tmp[2]<<8)|(tmp[1]<<16)|(tmp[0]<<24);
-                    break;
-                case uint8:
-                    data = tmp[0];
-                    break;
-                case uint16:
-                    // data = tmp[0]|(tmp[1]<<8);
-					data = tmp[1]|(tmp[0]<<8);
-                    break;
-                case uint32:
-                    // data = tmp[0]|(tmp[1]<<8)|(tmp[2]<<16)|(tmp[3]<<24);
-					data = tmp[3]|(tmp[2]<<8)|(tmp[1]<<16)|(tmp[0]<<24);
-                    break;
-            }
-            numMap++;
-        }
-        RPDOn++;
-        offset++;
-    }
-}
-
-
-/*!                                                                                                
-**                                                                                                 
-**                                                                                                 
-** @param d                                                                                        
-** @param m                                                                                        
+/*!
+**
+**
+** @param d
+** @param m
 **/
 void canDispatch(CO_Data* d, Message *m)
 {
-	UNS16 cob_id = UNS16_LE(m->cob_id);
-	 switch(cob_id >> 7)
-	{
-		case SYNC:		/* can be a SYNC or a EMCY message */
-			if(cob_id == 0x080)	/* SYNC */
-			{
-				if(d->CurrentCommunicationState.csSYNC)
-					proceedSYNC(d);
-			} else 		/* EMCY */
-				if(d->CurrentCommunicationState.csEmergency)
-					proceedEMCY(d, m);
-			break;
-		case TIME_STAMP:
-		case PDO1tx:
-		case PDO1rx:
-		case PDO2tx:
-		case PDO2rx:
-		case PDO3tx:
-		case PDO3rx:
-		case PDO4tx:
-		case PDO4rx:
-			if (d->CurrentCommunicationState.csPDO) {
+    UNS16 cob_id = UNS16_LE(m->cob_id);
+    switch(cob_id >> 7)
+    {
+        case SYNC:		/* can be a SYNC or a EMCY message */
+            if(cob_id == 0x080)	/* SYNC */
+            {
+                if(d->CurrentCommunicationState.csSYNC)
+                    proceedSYNC(d);
+            } else 		/* EMCY */
+            if(d->CurrentCommunicationState.csEmergency)
+                proceedEMCY(d,m);
+            break;
+        case TIME_STAMP:
+        case PDO1tx:
+        case PDO1rx:
+        case PDO2tx:
+        case PDO2rx:
+        case PDO3tx:
+        case PDO3rx:
+        case PDO4tx:
+        case PDO4rx:
+            if (d->CurrentCommunicationState.csPDO) {
                 proceedPDO(d, m);
-                // tmp_pdo(d);
             }
-			break;
-		case SDOtx:
-		case SDOrx:
-			if (d->CurrentCommunicationState.csSDO)
-				proceedSDO(d, m);
-			break;
-		case NODE_GUARD:
-			if (d->CurrentCommunicationState.csLifeGuard)
-				proceedNODE_GUARD(d, m);
-			break;
-		case NMT:
-			if (*(d->device_type))
-			{
-				proceedNMTstateChange(d, m);
-			}
+            break;
+        case SDOtx:
+        case SDOrx:
+            if (d->CurrentCommunicationState.csSDO)
+                proceedSDO(d,m);
+            break;
+        case NODE_GUARD:
+            if (d->CurrentCommunicationState.csLifeGuard)
+                proceedNODE_GUARD(d,m);
+            break;
+        case NMT:
+            if (*(d->iam_a_slave))
+            {
+                proceedNMTstateChange(d,m);
+            }
             break;
 #ifdef CO_ENABLE_LSS
 		case LSS:
@@ -151,7 +96,7 @@ void canDispatch(CO_Data* d, Message *m)
 			}
 			break;
 #endif
-	}
+    }
 }
 
 #define StartOrStop(CommType, FuncStart, FuncStop) \
@@ -166,111 +111,111 @@ void canDispatch(CO_Data* d, Message *m)
 	}
 #define None
 
-/*!                                                                                                
-**                                                                                                 
-**                                                                                                 
-** @param d                                                                                        
-** @param newCommunicationState                                                                    
+/*!
+**
+**
+** @param d
+** @param newCommunicationState
 **/
 void switchCommunicationState(CO_Data* d, s_state_communication *newCommunicationState)
 {
 #ifdef CO_ENABLE_LSS
-	StartOrStop(csLSS,	startLSS(d),	stopLSS(d))
+    StartOrStop(csLSS,	startLSS(d),	stopLSS(d))
 #endif
-	StartOrStop(csSDO,	None,		resetSDO(d))
-	StartOrStop(csSYNC,	startSYNC(d),		stopSYNC(d))
-	StartOrStop(csLifeGuard,	lifeGuardInit(d),	lifeGuardStop(d))
-	StartOrStop(csEmergency,	emergencyInit(d),	emergencyStop(d))
-	StartOrStop(csPDO,	PDOInit(d),	PDOStop(d))
-	StartOrStop(csBoot_Up,	None,	slaveSendBootUp(d))
+    StartOrStop(csSDO,	None,		resetSDO(d))
+    StartOrStop(csSYNC,	startSYNC(d),		stopSYNC(d))
+    StartOrStop(csLifeGuard,	lifeGuardInit(d),	lifeGuardStop(d))
+    StartOrStop(csEmergency,	emergencyInit(d),	emergencyStop(d))
+    StartOrStop(csPDO,	PDOInit(d),	PDOStop(d))
+    StartOrStop(csBoot_Up,	None,	slaveSendBootUp(d))
 }
 
-/*!                                                                                                
-**                                                                                                 
-**                                                                                                 
-** @param d                                                                                        
-** @param newState                                                                                 
-**                                                                                                 
-** @return                                                                                         
+/*!
+**
+**
+** @param d
+** @param newState
+**
+** @return
 **/
 UNS8 setState(CO_Data* d, e_nodeState newState)
 {
-	if(newState != d->nodeState){
-		switch( newState ){
-			case Initialisation:
-			{
-				s_state_communication newCommunicationState = {1, 0, 0, 0, 0, 0, 0};
-				d->nodeState = Initialisation;
-				switchCommunicationState(d, &newCommunicationState);
-				/* call user app init callback now. */
-				/* d->initialisation MUST NOT CALL SetState */
-				(*d->initialisation)(d);
-			}
+    if(newState != d->nodeState){
+        switch( newState ){
+            case Initialisation:
+            {
+                s_state_communication newCommunicationState = {1, 0, 0, 0, 0, 0, 0};
+                d->nodeState = Initialisation;
+                switchCommunicationState(d, &newCommunicationState);
+                /* call user app init callback now. */
+                /* d->initialisation MUST NOT CALL SetState */
+                (*d->initialisation)(d);
+            }
 
-			/* Automatic transition - No break statement ! */
-			/* Transition from Initialisation to Pre_operational */
-			/* is automatic as defined in DS301. */
-			/* App don't have to call SetState(d, Pre_operational) */
+                /* Automatic transition - No break statement ! */
+                /* Transition from Initialisation to Pre_operational */
+                /* is automatic as defined in DS301. */
+                /* App don't have to call SetState(d, Pre_operational) */
 
-			case Pre_operational:
-			{
+            case Pre_operational:
+            {
 
-				s_state_communication newCommunicationState = {0, 1, 1, 1, 1, 0, 1};
-				d->nodeState = Pre_operational;
-				switchCommunicationState(d, &newCommunicationState);
+                s_state_communication newCommunicationState = {0, 1, 1, 1, 1, 0, 1};
+                d->nodeState = Pre_operational;
+                switchCommunicationState(d, &newCommunicationState);
                 (*d->preOperational)(d);
-			}
-			break;
+            }
+                break;
 
-			case Operational:
-			if(d->nodeState == Initialisation) return 0xFF;
-			{
-				s_state_communication newCommunicationState = {0, 1, 1, 1, 1, 1, 0};
-				d->nodeState = Operational;
-				newState = Operational;
-				switchCommunicationState(d, &newCommunicationState);
-				(*d->operational)(d);
-			}
-			break;
+            case Operational:
+                if(d->nodeState == Initialisation) return 0xFF;
+                {
+                    s_state_communication newCommunicationState = {0, 1, 1, 1, 1, 1, 0};
+                    d->nodeState = Operational;
+                    newState = Operational;
+                    switchCommunicationState(d, &newCommunicationState);
+                    (*d->operational)(d);
+                }
+                break;
 
-			case Stopped:
-			if(d->nodeState == Initialisation) return 0xFF;
-			{
-				s_state_communication newCommunicationState = {0, 0, 0, 0, 1, 0, 1};
-				d->nodeState = Stopped;
-				newState = Stopped;
-				switchCommunicationState(d, &newCommunicationState);
-				(*d->stopped)(d);
-			}
-			break;
-			default:
-				return 0xFF;
+            case Stopped:
+                if(d->nodeState == Initialisation) return 0xFF;
+                {
+                    s_state_communication newCommunicationState = {0, 0, 0, 0, 1, 0, 1};
+                    d->nodeState = Stopped;
+                    newState = Stopped;
+                    switchCommunicationState(d, &newCommunicationState);
+                    (*d->stopped)(d);
+                }
+                break;
+            default:
+                return 0xFF;
 
-		}/* end switch case */
+        }/* end switch case */
 
-	}
-	/* d->nodeState contains the final state */
-	/* may not be the requested state */
+    }
+    /* d->nodeState contains the final state */
+    /* may not be the requested state */
     return d->nodeState;
 }
 
-/*!                                                                                                
-**                                                                                                 
-**                                                                                                 
-** @param d                                                                                        
-**                                                                                                 
-** @return                                                                                         
+/*!
+**
+**
+** @param d
+**
+** @return
 **/
 UNS8 getNodeId(CO_Data* d)
 {
-  return *d->bDeviceNodeId;
+    return *d->bDeviceNodeId;
 }
 
-/*!                                                                                                
-**                                                                                                 
-**                                                                                                 
-** @param d                                                                                        
-** @param nodeId                                                                                   
+/*!
+**
+**
+** @param d
+** @param nodeId
 **/
 void setNodeId(CO_Data* d, UNS8 nodeId)
 {
@@ -278,7 +223,7 @@ void setNodeId(CO_Data* d, UNS8 nodeId)
   UNS16 offset = d->firstIndex->SDO_SVR;
 
 #ifdef CO_ENABLE_LSS
-  d->lss_transfer.nodeID=nodeId;
+    d->lss_transfer.nodeID=nodeId;
   if(nodeId==0xFF){
   	*d->bDeviceNodeId = nodeId;
   	return;

@@ -99,7 +99,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             case Initialisation:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Initialisation\r\n", nodeId);break;
             case Disconnected:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Disconnected\r\n", nodeId);break;
             case Connecting:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Connecting\r\n", nodeId);break;
-            //case Preparing:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Preparing\r\n", nodeId);break;
+                //case Preparing:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Preparing\r\n", nodeId);break;
             case Stopped:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Stopped\r\n", nodeId);break;
             case Operational:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Operational\r\n", nodeId);break;
             case Pre_operational:MSG("Received NMT\tnodeId: %d\r\n\t\t\t\tstate: Pre_operational\r\n", nodeId);break;
@@ -133,7 +133,7 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
             UNS8 index, ConsumerHeartBeat_nodeId;
             for (index = (UNS8) 0x00; index < *d->ConsumerHeartbeatCount; index++) {
                 ConsumerHeartBeat_nodeId = (UNS8) (((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x00FF0000)
-                        >> (UNS8) 16);
+                                                           >> (UNS8) 16);
                 if (nodeId == ConsumerHeartBeat_nodeId) {
                     TIMEVAL time = ((d->ConsumerHeartbeatEntries[index]) & (UNS32) 0x0000FFFF);
                     /* Renew alarm for next heartbeat. */
@@ -142,7 +142,6 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
                 }
             }
         }
-
     }
 }
 
@@ -344,23 +343,23 @@ void lifeGuardStop(CO_Data *d) {
 }
 
 
-void _heartbeatError(CO_Data *d, UNS8 heartbeatID) {
+__attribute__((weak)) void _heartbeatError(CO_Data *d, UNS8 heartbeatID) {
     (void) d;
     (void) heartbeatID;
 }
 
-void _post_SlaveBootup(CO_Data *d, UNS8 SlaveID) {
+__attribute__((weak)) void _post_SlaveBootup(CO_Data *d, UNS8 SlaveID) {
     (void) d;
     (void) SlaveID;
 }
 
-void _post_SlaveStateChange(CO_Data *d, UNS8 nodeId, e_nodeState newNodeState) {
+__attribute__((weak)) void _post_SlaveStateChange(CO_Data *d, UNS8 nodeId, e_nodeState newNodeState) {
     (void) d;
     (void) nodeId;
     (void) newNodeState;
 }
 
-void _nodeguardError(CO_Data *d, UNS8 id) {
+__attribute__((weak)) void _nodeguardError(CO_Data *d, UNS8 id) {
     (void) d;
     (void) id;
 }

@@ -54,25 +54,28 @@ TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL va
 		if (callback && 	/* if something to store */
 			row->state == TIMER_FREE) /* and empty row */
 		{	/* just store */
-			TIMEVAL real_timer_value;
+//			TIMEVAL real_timer_value;
 			TIMEVAL elapsed_time;
 
 			if (row_number == last_timer_raw + 1) last_timer_raw++;
 
 			elapsed_time = getElapsedTime();
 			/* set next wakeup alarm if new entry is sooner than others, or if it is alone */
-			real_timer_value = value;
-			real_timer_value = min_val(real_timer_value, TIMEVAL_MAX);
+//			real_timer_value = value;
+//			real_timer_value = min_val(real_timer_value, TIMEVAL_MAX);
 
-			if (total_sleep_time > elapsed_time && total_sleep_time - elapsed_time > real_timer_value)
+			if (total_sleep_time > elapsed_time && total_sleep_time - elapsed_time > value)
 			{
-				total_sleep_time = elapsed_time + real_timer_value;
-				setTimer(real_timer_value);
+				if(total_sleep_time != TIMEVAL_MAX)
+					total_sleep_time = elapsed_time + value;
+                                else
+                                        total_sleep_time = value;
+				setTimer(value);
 			}
 			row->callback = callback;
 			row->d = d;
 			row->id = id;
-			row->val = value + elapsed_time;
+			row->val = elapsed_time + value;
 			row->interval = period;
 			row->state = TIMER_ARMED;
 			D_MSG_TIME("Set timer %s, after %d us", name, value + elapsed_time);
@@ -127,33 +130,27 @@ void TimeDispatch(void)
 		D_MSG_TIME("%d %s state-%d", i, row->name, row->state);
 		if (row->state & TIMER_ARMED) /* if row is active */
 		{
-			if (!row->interval) /* if simply outdated */
-			{
-				/* Each armed timer value in decremented. */
-				if(row->val > overrun) {
-					row->val -= overrun;
-					if (row->val < next_wakeup)
-						next_wakeup = row->val;
-				}
-				else {
+			/* Each armed timer value in decremented. */
+			if(row->val <= total_sleep_time) {
+				if (!row->interval) /* if simply outdated */
+				{
 					/* Check if this new timer value is the soonest */
 					//D_MSG_TIME("TIMER_TRIG");
 					row->state = TIMER_TRIG; /* ask for trig */
 				}
-			}
-			else /* or period have expired */
-			{
-				/* set val as interval, with 32 bit overrun correction, */
-				/* modulo for 64 bit not available on all platforms     */
-				if(row->val > overrun) {
-					row->val -= overrun;
-				}
-				else {
-					//D_MSG_TIME("TIMER_TRIG_PERIOD");
+				else /* or period have expired */
+				{
+					/* set val as interval, with 32 bit overrun correction, */
+					/* modulo for 64 bit not available on all platforms     */
 					row->state = TIMER_TRIG_PERIOD; /* ask for trig, periodic */
 					/* Check if this new timer value is the soonest */
 					row->val = row->interval;
+					if (row->val < next_wakeup)
+						next_wakeup = row->val;
 				}
+			}
+			else {
+				row->val -= total_sleep_time;
 				if (row->val < next_wakeup)
 					next_wakeup = row->val;
 			}

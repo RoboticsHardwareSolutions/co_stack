@@ -54,7 +54,7 @@ UNS8 GetSDOClientFromNodeId( CO_Data* d, UNS8 nodeId );
  **
  ** @return
  **/
-INLINE UNS8 _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
+INLINE CanOpen_SDO_StateTypeDef _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
 		UNS8 subIndex, UNS32 count, UNS8 dataType, void *data, SDOCallback_t Callback, UNS8 endianize, UNS8 useBlockMode);
 
 /*!
@@ -70,7 +70,7 @@ INLINE UNS8 _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
  **
  ** @return
  **/
-INLINE UNS8 _readNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index, UNS8 subIndex,
+INLINE CanOpen_SDO_StateTypeDef _readNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index, UNS8 subIndex,
 		UNS8 dataType, SDOCallback_t Callback, UNS8 useBlockMode);
 
 
@@ -780,7 +780,6 @@ UNS8 proceedSDO (CO_Data* d, Message *m)
     UNS8 AckSeq;        /* Sequence number of last segment that was received successfully */
     UNS8 NbBytesNoData; /* Number of bytes that do not contain data in last segment of block transfer */
 
-    MSG_WAR(0x3A60, "proceedSDO ", 0);
     whoami = SDO_UNKNOWN;
     /* Looking for the cobId in the object dictionary. */
     switch(*d->device_type){
@@ -1332,6 +1331,7 @@ UNS8 proceedSDO (CO_Data* d, Message *m)
                     StopSDO_TIMER(line)
                     d->transfers[line].state = SDO_FINISHED;
                     if(d->transfers[line].Callback) (*d->transfers[line].Callback)(d,nodeId);
+                    resetSDOline(d, line); // maybe it's not so good
                     return 0x00;
                 }
                 if (nbBytes > 7) {
@@ -1947,7 +1947,7 @@ void resetClientSDOLineFromNodeId(CO_Data* d, UNS8 nodeId)
  **
  ** @return
  **/
-INLINE UNS8 _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
+INLINE CanOpen_SDO_StateTypeDef _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
                                UNS8 subIndex, UNS32 count, UNS8 dataType, void *data, SDOCallback_t Callback, UNS8 endianize, UNS8 useBlockMode)
 {
     (void)endianize;
@@ -1974,18 +1974,18 @@ INLINE UNS8 _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
     /* First let's find the corresponding SDO client in our OD  */
     CliNbr = GetSDOClientFromNodeId( d, nodeId);
     if(CliNbr >= 0xFE)
-        return CliNbr;
+        return CANOPEN_SDO_STATE_CLIENT_NOT_FOUND;
     /* Verify that there is no SDO communication yet. */
     err = getSDOlineOnUse(d, CliNbr, SDO_CLIENT, &line);
     if (!err) {
         MSG_ERR(0x1AC4, "SDO error : Communication yet established. with node : ", nodeId);
-        return 0xFF;
+        return CANOPEN_SDO_STATE_COMMUNICATION_YET_ESTABLISHED;
     }
     /* Taking the line ... */
     err = getSDOfreeLine( d, SDO_CLIENT, &line );
     if (err) {
         MSG_ERR(0x1AC5, "SDO error : No line free, too many SDO in progress. Aborted for node : ", nodeId);
-        return (0xFF);
+        return CANOPEN_SDO_STATE_TOO_MANY_COMMUNICATION;
     }
     else {
         MSG_WAR(0x3AE1, "Transmission on line : ", line);
@@ -2008,7 +2008,7 @@ INLINE UNS8 _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
 			if (d->transfers[line].dynamicData == NULL)
 			{
 				MSG_ERR(0x1AC9, "SDO. Error. Could not allocate enough bytes : ", count);
-				return 0xFE;
+				return CANOPEN_SDO_STATE_ALLOC_ERROR;
 			}
 			lineData = d->transfers[line].dynamicData;
 		}
@@ -2067,11 +2067,10 @@ INLINE UNS8 _writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
         MSG_ERR(0x1AD1, "SDO. Error while sending SDO to node : ", nodeId);
         /* release the line */
         resetSDOline(d, line);
-        return 0xFF;
+        return CANOPEN_SDO_STATE_SEND_ERROR;
     }
 
-
-    return 0;
+    return CANOPEN_SDO_STATE_OK;
 }
 
 /*!
@@ -2109,7 +2108,7 @@ UNS8 writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
  **
  ** @return
  **/
-UNS8 writeNetworkDictCallBack (CO_Data* d, UNS8 nodeId, UNS16 index,
+CanOpen_SDO_StateTypeDef writeNetworkDictCallBack (CO_Data* d, UNS8 nodeId, UNS16 index,
                                UNS8 subIndex, UNS32 count, UNS8 dataType, void *data, SDOCallback_t Callback, UNS8 useBlockMode)
 {
     return _writeNetworkDict (d, nodeId, index, subIndex, count, dataType, data, Callback, 1, useBlockMode);
@@ -2167,6 +2166,7 @@ UNS8 writeNetworkDictCallBackAI (CO_Data* d, UNS8 nodeId, UNS16 index,
     }
 }
 
+
 /*!
  **
  **
@@ -2180,7 +2180,7 @@ UNS8 writeNetworkDictCallBackAI (CO_Data* d, UNS8 nodeId, UNS16 index,
  **
  ** @return
  **/
-INLINE UNS8 _readNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index, UNS8 subIndex, UNS8 dataType, SDOCallback_t Callback, UNS8 useBlockMode)
+INLINE CanOpen_SDO_StateTypeDef _readNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index, UNS8 subIndex, UNS8 dataType, SDOCallback_t Callback, UNS8 useBlockMode)
 {
     UNS8 err;
     UNS8 i;
@@ -2195,19 +2195,19 @@ INLINE UNS8 _readNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index, UNS8 subInde
     /* First let's find the corresponding SDO client in our OD  */
     CliNbr = GetSDOClientFromNodeId( d, nodeId);
     if(CliNbr >= 0xFE)
-        return CliNbr;
+        return CANOPEN_SDO_STATE_CLIENT_NOT_FOUND;
 
     /* Verify that there is no SDO communication yet. */
     err = getSDOlineOnUse(d, CliNbr, SDO_CLIENT, &line);
     if (!err) {
         MSG_WAR(0x1AD8, "SDO error : Communication yet established. with node : ", nodeId);
-        return 0xFF;
+        return CANOPEN_SDO_STATE_COMMUNICATION_YET_ESTABLISHED;
     }
     /* Taking the line ... */
     err = getSDOfreeLine( d, SDO_CLIENT, &line );
     if (err) {
         MSG_WAR(0x1AD9, "SDO error : No line free, too many SDO in progress. Aborted for node : ", nodeId);
-        return (0xFF);
+        return CANOPEN_SDO_STATE_TOO_MANY_COMMUNICATION;
     }
     else {
         MSG_WAR(0x3AE0, "Transmission on line : ", line);
@@ -2242,9 +2242,9 @@ INLINE UNS8 _readNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index, UNS8 subInde
         MSG_ERR(0x1AE5, "SDO. Error while sending SDO to node : ", nodeId);
         /* release the line */
         resetSDOline(d, line);
-        return 0xFF;
+        return CANOPEN_SDO_STATE_SEND_ERROR;
     }
-    return 0;
+    return CANOPEN_SDO_STATE_OK;
 }
 
 /*!
