@@ -9,9 +9,10 @@
 */
 
 #include "states.h"
-#include "data.h"
+// #include "data.h"
 #include "sysdep.h"
 #include "objaccessinternal.h"
+#include "nmtSlave.h"
 
 /** Prototypes for internals functions */
 /*!                                                                                                
@@ -78,7 +79,7 @@ void canDispatch(CO_Data* d, Message *m)
                 proceedNODE_GUARD(d,m);
             break;
         case NMT:
-            if (*(d->iam_a_slave))
+            if (*(d->device_type))
             {
                 proceedNMTstateChange(d,m);
             }

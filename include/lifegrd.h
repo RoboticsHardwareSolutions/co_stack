@@ -32,9 +32,9 @@
 
 
 #include "applicfg.h"
-#include "states.h"
+// #include "states.h"
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 typedef void (*heartbeatError_t)(CO_Data*, UNS8);
 void _heartbeatError(CO_Data* d, UNS8 heartbeatID);

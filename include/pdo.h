@@ -7,13 +7,14 @@
 #ifndef __pdo_h__
 #define __pdo_h__
 
-#include <applicfg.h>
-#include <def.h>
+// #include "applicfg.h"
+#include "def.h"
 #include "timerscfg.h"
 #include "co_can.h"
+#include "objacces.h"
 
 typedef struct struct_s_PDO_status s_PDO_status;
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 /* Handler for RxPDO event timers : empty function that user can overload */
 void _RxPDO_EventTimers_Handler(CO_Data *d, UNS32 pdoNum);

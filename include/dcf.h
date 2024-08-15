@@ -1,4 +1,8 @@
+#ifndef __DCF_H__
+#define __DCF_H__
+
 #include "applicfg.h"
+#include "objacces.h"
 
 #define DCF_STATUS_INIT         0
 #define DCF_STATUS_READ_CHECK   1
@@ -6,7 +10,7 @@
 #define DCF_STATUS_SAVED        3
 #define DCF_STATUS_VERIF_OK     4
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 /** 
  * @brief Init the consise dcf in CO_Data for nodeId
@@ -30,3 +34,4 @@ UNS8 init_consise_dcf(CO_Data* d, UNS8 nodeId);
 */
 UNS8 check_and_start_node(CO_Data* d, UNS8 nodeId);
 
+#endif //__DCF_H__

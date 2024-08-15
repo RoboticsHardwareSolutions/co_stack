@@ -11,7 +11,7 @@
 
 #include <applicfg.h>
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 /** 
  * @ingroup nmtmaster

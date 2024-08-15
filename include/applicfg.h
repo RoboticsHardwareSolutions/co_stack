@@ -1,10 +1,11 @@
 #ifndef __APPLICFG_H
 #define __APPLICFG_H
 
-#include <stdio.h>
+// #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
-#include <time.h>
+#include <stddef.h>
+// #include <string.h>
+// #include <time.h>
 
 
 /*  Define the architecture : little_endian or big_endian
@@ -82,6 +83,6 @@
 #endif
 
 typedef void *CAN_PORT;
-// typedef struct struct_CO_Data CO_Data;
+typedef struct struct_CO_Data CO_Data;
 
 #endif

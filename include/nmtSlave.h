@@ -6,9 +6,11 @@
 #ifndef __nmtSlave_h__
 #define __nmtSlave_h__
 
-#include <applicfg.h>
-typedef struct struct_CO_Data CO_Data;
-typedef struct Message Message;
+#include "applicfg.h"
+#include "objacces.h"
+#include "co_can.h"
+//typedef struct struct_CO_Data CO_Data;
+//typedef struct Message Message;
 
 /** 
  * @brief Threat the reception of a NMT message from the master.

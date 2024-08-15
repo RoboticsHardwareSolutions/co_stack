@@ -6,6 +6,8 @@
 #define __states_h__
 
 #include "applicfg.h"
+#include "objacces.h"
+#include "co_can.h"
 
 /* The nodes states 
  * -----------------
@@ -38,8 +40,8 @@ typedef struct
 	INTEGER8 csLSS;
 } s_state_communication;
 
-typedef struct struct_CO_Data CO_Data;
-typedef struct Message Message;
+//typedef struct struct_CO_Data CO_Data;
+//typedef struct Message Message;
 
 /** 
  * @brief Function that user app can overload

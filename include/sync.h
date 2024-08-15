@@ -8,8 +8,9 @@
 #define __SYNC_h__
 
 #include "applicfg.h"
+#include "objacces.h"
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 void startSYNC(CO_Data* d);
 

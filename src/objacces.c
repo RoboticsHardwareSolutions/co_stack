@@ -16,6 +16,7 @@
 
 #include "objacces.h"
 #include "data.h"
+#include <string.h>
 
 
 void *memcpy_flash(void * dest, const CONSTSTORE void * source, size_t length) {

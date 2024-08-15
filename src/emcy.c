@@ -9,11 +9,14 @@
 */
 
 #include "emcy.h"
+#include <string.h>
+// #include "co_can.h"
 #include "data.h"
-#include "canfestival.h"
-#include "sysdep.h"
-#include "config.h"
 #include "can_driver.h"
+// #include "canfestival.h"
+// #include "sysdep.h"
+// #include "config.h"
+// #include "can_driver.h"
 
 UNS32 OnNumberOfErrorsUpdate(CO_Data* d, UNS16 unsused_indextable, UNS8 unsused_bSubindex);
 

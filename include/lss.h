@@ -61,7 +61,7 @@
 #include "timer.h"
 #include "co_can.h"
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 typedef void (*LSSCallback_t)(CO_Data* d, UNS8 command); 
 

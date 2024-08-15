@@ -12,6 +12,7 @@
 #include "data.h"
 #include "sysdep.h"
 #include "objaccessinternal.h"
+#include <string.h>
 
 typedef struct {
     UNS16 Index;

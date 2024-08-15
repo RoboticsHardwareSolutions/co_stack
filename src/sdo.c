@@ -22,6 +22,7 @@
 #include "objaccessinternal.h"
 #include "timerscfg.h"
 #include "timer.h"
+#include <string.h>
 
 /* Uncomment if your compiler does not support inline functions */
 #define NO_INLINE
@@ -32,7 +33,7 @@
 #define INLINE inline
 #endif
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 /*Internals prototypes*/
 

@@ -16,7 +16,9 @@
 
 #include "config.h"
 #include "timer.h"
-#include "can.h"
+// #include "can.h"
+#include "co_can.h"
+
 
 typedef enum
 {
@@ -28,8 +30,8 @@ typedef enum
     CANOPEN_SDO_STATE_ALLOC_ERROR,
 } CanOpen_SDO_StateTypeDef;
 
-typedef struct struct_CO_Data CO_Data;
-typedef struct Message Message;
+//typedef struct struct_CO_Data CO_Data;
+//typedef struct Message Message;
 
 /* Block mode : Data consumer receive step
  * - set to RXSTEP_STARTED when client receive initiate upload response

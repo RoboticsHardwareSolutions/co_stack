@@ -8,15 +8,15 @@
 **
 */
 
-#include "lifegrd.h"
+// #include "lifegrd.h"
 #include "data.h"
-#include "canfestival.h"
-#include "dcf.h"
-#include "sysdep.h"
-#include "config.h"
+// #include "canfestival.h"
+// #include "dcf.h"
+// #include "sysdep.h"
+// #include "config.h"
 #include "can_driver.h"
-#include "timerscfg.h"
-#include "timer.h"
+// #include "timerscfg.h"
+// #include "timer.h"
 
 void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id);
 
