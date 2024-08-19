@@ -1,7 +1,7 @@
 #ifndef __CAN_DRIVER_H
 #define __CAN_DRIVER_H
 
-// #include "def.h"
+#include "def.h"
 #include "co_can.h"
 
 
