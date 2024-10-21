@@ -52,25 +52,6 @@
 #define REAL64 double
 
 
-#ifdef CO_STACK_DEBUG_ENABLE
-/* Definition of error and warning macros */
-/* -------------------------------------- */
-    #define MSG(...) LOG(__VA_ARGS__)
-    /* Definition of MSG_ERR */
-    /* --------------------- */
-    #define MSG_WAR(num, str, val) LOG_WAR("MSG_WAR %x %s %x\n", num, str, val)
-    #define MSG_ERR(num, str, val) LOG_ERR("MSG_ERR %x %s %x\n", num, str, val)
-    #define MSG_TIME(...)          LOG(__VA_ARGS__)
-
-#else
-
-    #define MSG(...)
-    #define MSG_WAR(num, str, val)
-    #define MSG_ERR(num, str, val)
-    #define MSG_TIME(...)
-#endif //CO_STACK_DEBUG_ENABLE
-
-
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
 #define dFUNCTION __PRETTY_FUNCTION__

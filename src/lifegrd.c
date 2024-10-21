@@ -47,7 +47,6 @@ void ConsumerHeartbeatAlarm(CO_Data *d, UNS32 id) {
     UNS8 nodeId = (UNS8) (((d->ConsumerHeartbeatEntries[id]) & (UNS32) 0x00FF0000) >> (UNS8) 16);
     /*MSG_WAR(0x00, "ConsumerHearbeatAlarm", 0x00);*/
 
-    MSG_TIME("ConsumerHeartbeatAlarm");
     /* timer have been notified and is now free (non periodic)*/
     /* -> avoid deleting re-assigned timer if message is received too late*/
     d->ConsumerHeartBeatTimers[id] = TIMER_NONE;
@@ -155,7 +154,6 @@ void proceedNODE_GUARD(CO_Data *d, Message *m) {
 void ProducerHeartbeatAlarm(CO_Data *d, UNS32 id) {
     (void) id;
     if (*d->ProducerHeartBeatTime) {
-        MSG_TIME("ProducerHeartbeatAlarm");
         Message msg;
         /* Time expired, the heartbeat must be sent immediately
         ** generate the correct node-id: this is done by the offset 1792

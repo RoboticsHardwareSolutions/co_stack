@@ -24,14 +24,6 @@ TIMER_HANDLE last_timer_raw = -1;
 #define min_val(a,b) ((a<b)?a:b)
 
 
-//#define DEBUG
-#ifdef DEBUG
-#    define D_MSG_TIME(...)          \
-          MSG_TIME(__VA_ARGS__)
-#else
-#    define D_MSG_TIME(...)
-#endif
-
 /*!
 ** -------  Use this to declare a new alarm ------
 **
@@ -78,7 +70,6 @@ TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL va
 			row->val = elapsed_time + value;
 			row->interval = period;
 			row->state = TIMER_ARMED;
-			D_MSG_TIME("Set timer %s, after %d us", name, value + elapsed_time);
 			return row_number;
 		}
 	}
@@ -102,7 +93,6 @@ TIMER_HANDLE DelAlarm(TIMER_HANDLE handle)
 		if(handle == last_timer_raw)
 			last_timer_raw--;
 		timers[handle].state = TIMER_FREE;
-		D_MSG_TIME("Delete timer %s", timers[handle].name);
 	}
 	return TIMER_NONE;
 }
@@ -122,10 +112,8 @@ void TimeDispatch(void)
 
 	s_timer_entry *row;
 
-	D_MSG_TIME("List of timers:");
 	for(i=0, row = timers; i <= last_timer_raw; i++, row++)
 	{
-		D_MSG_TIME("%d %s state-%d", i, row->name, row->state);
 		if (row->state & TIMER_ARMED) /* if row is active */
 		{
 			/* Each armed timer value in decremented. */
@@ -133,7 +121,6 @@ void TimeDispatch(void)
 				if (!row->interval) /* if simply outdated */
 				{
 					/* Check if this new timer value is the soonest */
-					//D_MSG_TIME("TIMER_TRIG");
 					row->state = TIMER_TRIG; /* ask for trig */
 				}
 				else /* or period have expired */
@@ -166,7 +153,6 @@ void TimeDispatch(void)
 	{
 		if (row->state & TIMER_TRIG)
 		{
-			D_MSG_TIME("TIMER_TRIG %s", row->name);
 			row->state &= ~TIMER_TRIG; /* reset trig state (will be free if not periodic) */
 			if(!row->interval)
 				DelAlarm(i);
