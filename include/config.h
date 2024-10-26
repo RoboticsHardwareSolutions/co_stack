@@ -1,7 +1,7 @@
 #ifndef _CONFIG_H_
 #    define _CONFIG_H_
 
-#    define CO_ARCH_CUSTOM 0        // User creates its own mongoose_custom.h
+#    define CO_ARCH_CUSTOM 0        // User creates its own co_config_custom.h
 #    define CO_ARCH_UNIX 1          // Linux, BSD, Mac, ...
 #    define CO_ARCH_WIN32 2         // Windows
 #    define CO_ARCH_ESP32 3         // ESP32
