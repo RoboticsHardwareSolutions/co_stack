@@ -28,17 +28,12 @@ All custom options (Examples):
 #define NO_SDO_DYNAMIC_BUFFER_ALLOCATION // If you don't want to use dynamic allocation
 #define SDO_DYNAMIC_BUFFER_ALLOCATION_SIZE 256 // Change max buffer allocation
 
-// If you need logs:  and define LOG(...) macros, e.g. printf(__VA_ARGS__)
-#define CO_STACK_DEBUG_ENABLE               /* Enable debug mode */
+// If you need logs:
+#define CO_STACK_ENABLE_DEBUG
 
-/***** FOR STANDARD LIB *****/
-#include "stdio.h"                          /* include you log output lib */
-/* Define CO_LOG, CO_LOG_WAR and CO_LOG_ERR macros */
-#define CO_LOG(...) printf(__VA_ARGS__)     /* e.g. printf(__VA_ARGS__) */
-#define CO_LOG_WAR(...) CO_LOG(__VA_ARGS__)
-#define CO_LOG_ERR(...) CO_LOG(__VA_ARGS__)
-
-/***** OR FOR RLOG LIB *****/
+// If you need custom log (CO_STACK_ENABLE_DEBUG must be defined):
+#define CO_STACK_ENABLE_CUSTOM_LOG
+/***** EXAMPLE FOR RLOG LIB *****/
 #include "rlog.h"
 #define CO_LOG(...) RLOG_INFO(__VA_ARGS__)
 #define CO_LOG_WAR(...) RLOG_WARNING(__VA_ARGS__)
