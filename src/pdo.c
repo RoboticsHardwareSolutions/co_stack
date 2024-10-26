@@ -606,7 +606,6 @@ _sendPDOevent (CO_Data * d, UNS8 isSyncEvent)
     {
       return 0;
     }
-  MSG("_sendPDOevent()");
   if(*d->device_type == 3)
     offsetObjdict = 0;
   /* study all PDO stored in the objects dictionary */
