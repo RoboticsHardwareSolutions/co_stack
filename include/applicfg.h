@@ -1,10 +1,11 @@
 #ifndef __APPLICFG_H
 #define __APPLICFG_H
 
-#include <stdio.h>
+// #include <stdio.h>
 #include <stdint.h>
-#include <string.h>
-#include <time.h>
+#include <stddef.h>
+// #include <string.h>
+// #include <time.h>
 
 
 /*  Define the architecture : little_endian or big_endian
@@ -51,36 +52,18 @@
 #define REAL64 double
 
 
-#ifdef CO_STACK_DEBUG_ENABLE
-/* Definition of error and warning macros */
-/* -------------------------------------- */
-    #define MSG(...) LOG(__VA_ARGS__)
-    /* Definition of MSG_ERR */
-    /* --------------------- */
-    #define MSG_WAR(num, str, val) LOG_WAR("MSG_WAR %x %s %x\n", num, str, val)
-    #define MSG_ERR(num, str, val) LOG_ERR("MSG_ERR %x %s %x\n", num, str, val)
-    #define MSG_TIME(...)          LOG(__VA_ARGS__)
-
-#else
-
-    #define MSG(...)
-    #define MSG_WAR(num, str, val)
-    #define MSG_ERR(num, str, val)
-    #define MSG_TIME(...)
-#endif //CO_STACK_DEBUG_ENABLE
-
 
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
 #define dFUNCTION __PRETTY_FUNCTION__
 #else
-    #ifdef _MSC_VER
-        #define dFUNCTION __FUNCSIG__
-    #else
-        #define dFUNCTION __FUNCTION__
-    #endif
+#ifdef _MSC_VER
+#define dFUNCTION __FUNCSIG__
+#else
+#define dFUNCTION __FUNCTION__
+#endif
 #endif
 
 typedef void *CAN_PORT;
-// typedef struct struct_CO_Data CO_Data;
+typedef struct struct_CO_Data CO_Data;
 
 #endif

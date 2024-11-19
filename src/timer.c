@@ -24,14 +24,6 @@ TIMER_HANDLE last_timer_raw = -1;
 #define min_val(a,b) ((a<b)?a:b)
 
 
-//#define DEBUG
-#ifdef DEBUG
-#    define D_MSG_TIME(...)          \
-          MSG_TIME(__VA_ARGS__)
-#else
-#    define D_MSG_TIME(...)
-#endif
-
 /*!
 ** -------  Use this to declare a new alarm ------
 **
@@ -54,28 +46,30 @@ TIMER_HANDLE SetAlarm(CO_Data* d, UNS32 id, TimerCallback_t callback, TIMEVAL va
 		if (callback && 	/* if something to store */
 			row->state == TIMER_FREE) /* and empty row */
 		{	/* just store */
-			TIMEVAL real_timer_value;
+//			TIMEVAL real_timer_value;
 			TIMEVAL elapsed_time;
 
 			if (row_number == last_timer_raw + 1) last_timer_raw++;
 
 			elapsed_time = getElapsedTime();
 			/* set next wakeup alarm if new entry is sooner than others, or if it is alone */
-			real_timer_value = value;
-			real_timer_value = min_val(real_timer_value, TIMEVAL_MAX);
+//			real_timer_value = value;
+//			real_timer_value = min_val(real_timer_value, TIMEVAL_MAX);
 
-			if (total_sleep_time > elapsed_time && total_sleep_time - elapsed_time > real_timer_value)
+			if (total_sleep_time > elapsed_time && total_sleep_time - elapsed_time > value)
 			{
-				total_sleep_time = elapsed_time + real_timer_value;
-				setTimer(real_timer_value);
+				if(total_sleep_time != TIMEVAL_MAX)
+					total_sleep_time = elapsed_time + value;
+                                else
+                                        total_sleep_time = value;
+				setTimer(value);
 			}
 			row->callback = callback;
 			row->d = d;
 			row->id = id;
-			row->val = value + elapsed_time;
+			row->val = elapsed_time + value;
 			row->interval = period;
 			row->state = TIMER_ARMED;
-			D_MSG_TIME("Set timer %s, after %d us", name, value + elapsed_time);
 			return row_number;
 		}
 	}
@@ -99,7 +93,6 @@ TIMER_HANDLE DelAlarm(TIMER_HANDLE handle)
 		if(handle == last_timer_raw)
 			last_timer_raw--;
 		timers[handle].state = TIMER_FREE;
-		D_MSG_TIME("Delete timer %s", timers[handle].name);
 	}
 	return TIMER_NONE;
 }
@@ -115,45 +108,34 @@ void TimeDispatch(void)
 	TIMEVAL next_wakeup = TIMEVAL_MAX; /* used to compute when should normaly occur next wakeup */
 	/* First run : change timer state depending on time */
 	/* Get time since timer signal */
-	UNS32 overrun = (UNS32)getElapsedTime();
-
-	TIMEVAL real_total_sleep_time = total_sleep_time + overrun;
+	UNS32 overrun = (UNS32)getElapsedTime();// Delete?
 
 	s_timer_entry *row;
 
-	D_MSG_TIME("List of timers:");
 	for(i=0, row = timers; i <= last_timer_raw; i++, row++)
 	{
-		D_MSG_TIME("%d %s state-%d", i, row->name, row->state);
 		if (row->state & TIMER_ARMED) /* if row is active */
 		{
-			if (!row->interval) /* if simply outdated */
-			{
-				/* Each armed timer value in decremented. */
-				if(row->val > overrun) {
-					row->val -= overrun;
-					if (row->val < next_wakeup)
-						next_wakeup = row->val;
-				}
-				else {
+			/* Each armed timer value in decremented. */
+			if(row->val <= total_sleep_time) {
+				if (!row->interval) /* if simply outdated */
+				{
 					/* Check if this new timer value is the soonest */
-					//D_MSG_TIME("TIMER_TRIG");
 					row->state = TIMER_TRIG; /* ask for trig */
 				}
-			}
-			else /* or period have expired */
-			{
-				/* set val as interval, with 32 bit overrun correction, */
-				/* modulo for 64 bit not available on all platforms     */
-				if(row->val > overrun) {
-					row->val -= overrun;
-				}
-				else {
-					//D_MSG_TIME("TIMER_TRIG_PERIOD");
+				else /* or period have expired */
+				{
+					/* set val as interval, with 32 bit overrun correction, */
+					/* modulo for 64 bit not available on all platforms     */
 					row->state = TIMER_TRIG_PERIOD; /* ask for trig, periodic */
 					/* Check if this new timer value is the soonest */
 					row->val = row->interval;
+					if (row->val < next_wakeup)
+						next_wakeup = row->val;
 				}
+			}
+			else {
+				row->val -= total_sleep_time;
 				if (row->val < next_wakeup)
 					next_wakeup = row->val;
 			}
@@ -171,7 +153,6 @@ void TimeDispatch(void)
 	{
 		if (row->state & TIMER_TRIG)
 		{
-			D_MSG_TIME("TIMER_TRIG %s", row->name);
 			row->state &= ~TIMER_TRIG; /* reset trig state (will be free if not periodic) */
 			if(!row->interval)
 				DelAlarm(i);

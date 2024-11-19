@@ -5,8 +5,13 @@
 extern "C" {
 #endif
 #include "applicfg.h"
+
 #include "def.h"
 #include "co_can.h"
+#include "nmtSlave.h"
+#include "nmtMaster.h"
+
+#include <stddef.h>
 #include "objdictdef.h"
 #include "objacces.h"
 #include "sdo.h"
@@ -14,8 +19,6 @@ extern "C" {
 #include "states.h"
 #include "lifegrd.h"
 #include "sync.h"
-#include "nmtSlave.h"
-#include "nmtMaster.h"
 #include "emcy.h"
 #include "timerscfg.h"
 #ifdef CO_ENABLE_LSS

@@ -17,14 +17,13 @@
 #ifndef __objacces_h__
 #define __objacces_h__
 
-#include <applicfg.h>
+#include "applicfg.h"
 
 #ifdef __cplusplus
 extern "C" {
 #endif
 
 typedef struct struct_CO_Data CO_Data;
-
 typedef UNS32 (*valueRangeTest_t)(UNS8 typeValue, void *Value);
 typedef UNS32 (* storeODSubIndex_t)(CO_Data* d, UNS16 wIndex, UNS8 bSubindex);
 UNS32 _storeODSubIndex (CO_Data* d, UNS16 wIndex, UNS8 bSubindex);

@@ -1,6 +1,9 @@
 #ifndef __OBJDICTDEF_H
 #define __OBJDICTDEF_H
 
+#include "applicfg.h"
+#include "objacces.h"
+#include "sysdep.h"
 
 /************************* CONSTANTES **********************************/
 /** this are static defined datatypes taken fCODE the canopen standard. They
@@ -101,7 +104,7 @@ typedef struct s_quick_index{
 
 /************************** MACROS *********************************/
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 typedef UNS32 (*ODCallback_t)(CO_Data* d, UNS16 wIndex, UNS8 bSubindex);
 typedef const CONSTSTORE indextable * (*scanIndexOD_t)(UNS16 wIndex, UNS32 * errorCode, ODCallback_t **Callback);
 

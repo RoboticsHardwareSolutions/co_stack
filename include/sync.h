@@ -8,18 +8,19 @@
 #define __SYNC_h__
 
 #include "applicfg.h"
+#include "objacces.h"
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 
 void startSYNC(CO_Data* d);
 
 void stopSYNC(CO_Data* d);
 
 typedef void (*post_sync_t)(CO_Data*);
-void _post_sync(CO_Data* d);
+__attribute__((weak)) void _post_sync(CO_Data* d);
 
 typedef void (*post_TPDO_t)(CO_Data*);
-void _post_TPDO(CO_Data* d);
+__attribute__((weak)) void _post_TPDO(CO_Data* d);
 
 /** 
  * @brief Transmit a SYNC message and trigger sync TPDOs

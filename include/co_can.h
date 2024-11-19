@@ -1,5 +1,5 @@
-#ifndef __CAN_H__
-#define __CAN_H__
+#ifndef __CO_CAN_H__
+#define __CO_CAN_H__
 
 #include "applicfg.h"
 
@@ -14,10 +14,12 @@ struct Message {
     UNS8 data[8]; /**< message's datas */
 };
 
-typedef struct Message Message;
+//typedef struct Message Message;
 
 #define Message_Initializer {0,0,0,{0,0,0,0,0,0,0,0}}
 
+typedef struct Message Message;
+
 typedef UNS8 (*canSend_t)(Message *);
 
-#endif /* __can_h__ */
+#endif /* __CO_CAN_H__ */

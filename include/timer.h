@@ -3,9 +3,10 @@
 
 #include "timerscfg.h"
 #include "applicfg.h"
-#include "data.h"
+#include "objacces.h"
+// #include "data.h"
 
-typedef struct struct_CO_Data CO_Data;
+//typedef struct struct_CO_Data CO_Data;
 /* --------- types and constants definitions --------- */
 
 

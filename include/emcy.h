@@ -17,9 +17,11 @@
 #define __emcy_h__
 
 #include "applicfg.h"
+#include "objacces.h"
+#include "co_can.h"
 
-typedef struct struct_CO_Data CO_Data;
-typedef struct Message Message;
+//typedef struct struct_CO_Data CO_Data;
+//typedef struct Message Message;
 
 /* The error states 
  * ----------------- */

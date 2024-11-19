@@ -8,12 +8,14 @@
 **
 */
 #include "nmtMaster.h"
-#include "sysdep.h"
+#include "data.h"
+// #include "sysdep.h"
 #include "def.h"
 #include "co_can.h"
-#include "data.h"
-#include "canfestival.h"
+// #include "data.h"
+// #include "canfestival.h"
 #include "can_driver.h"
+#include "objacces.h"
 
 /*!
 **

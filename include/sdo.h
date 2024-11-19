@@ -15,14 +15,27 @@
 //struct struct_s_transfer;
 
 #include "config.h"
-#include "timerscfg.h"
+#include "timer.h"
+// #include "can.h"
+#include "co_can.h"
 
-typedef struct struct_CO_Data CO_Data;
-typedef struct Message Message;
 
-/* Block mode : Data consumer receive step 
- * - set to RXSTEP_STARTED when client receive initiate upload response 
- * - set to RXSTEP_END when last segment of a block received 
+typedef enum
+{
+    CANOPEN_SDO_STATE_OK = 0,
+    CANOPEN_SDO_STATE_CLIENT_NOT_FOUND,
+    CANOPEN_SDO_STATE_COMMUNICATION_YET_ESTABLISHED,
+    CANOPEN_SDO_STATE_TOO_MANY_COMMUNICATION,
+    CANOPEN_SDO_STATE_SEND_ERROR,
+    CANOPEN_SDO_STATE_ALLOC_ERROR,
+} CanOpen_SDO_StateTypeDef;
+
+//typedef struct struct_CO_Data CO_Data;
+//typedef struct Message Message;
+
+/* Block mode : Data consumer receive step
+ * - set to RXSTEP_STARTED when client receive initiate upload response
+ * - set to RXSTEP_END when last segment of a block received
  */
 typedef enum {RXSTEP_INIT, RXSTEP_STARTED, RXSTEP_END } rxStep_t;
 
@@ -40,7 +53,7 @@ struct struct_s_transfer {
 
   UNS8           whoami;     /**< Takes the values SDO_CLIENT or SDO_SERVER */
   UNS8           state;      /**< state of the transmission : Takes the values SDO_... */
-  UNS8           toggle;	
+  UNS8           toggle;
   UNS32          abortCode;  /**< Sent or received */
   /**< index and subindex of the dictionary where to store */
   /**< (for a received SDO) or to read (for a transmit SDO) */
@@ -58,13 +71,13 @@ struct struct_s_transfer {
   UNS8           *dynamicData;
   UNS32          dynamicDataSize;
 #endif //SDO_DYNAMIC_BUFFER_ALLOCATION
-                                    
+
   UNS8           peerCRCsupport;    /**< True if peer supports CRC */
   UNS8           blksize;           /**< Number of segments per block with 0 < blksize < 128 */
   UNS8           ackseq;            /**< sequence number of last segment that was received successfully */
   UNS32          objsize;           /**< Size in bytes of the object provided by data producer */
   UNS32          lastblockoffset;   /**< Value of offset before last block */
-  UNS8           seqno;             /**< Last sequence number received OK or transmitted */   
+  UNS8           seqno;             /**< Last sequence number received OK or transmitted */
   UNS8           endfield;          /**< nbr of bytes in last segment of last block that do not contain data */
   rxStep_t       rxstep;            /**< data consumer receive step - set to true when last segment of a block received */
   UNS8           tmpData[8];        /**< temporary segment storage */
@@ -83,7 +96,7 @@ struct struct_s_transfer {
 };
 typedef struct struct_s_transfer s_transfer;
 
-/** 
+/**
  * @brief Reset of a SDO exchange on timeout.
  * Send a SDO abort.
  * @param *d Pointer on a CAN object data structure
@@ -91,14 +104,14 @@ typedef struct struct_s_transfer s_transfer;
  */
 void SDOTimeoutAlarm(CO_Data* d, UNS32 id);
 
-/** 
+/**
  * @brief Reset all SDO buffers.
  * @param *d Pointer on a CAN object data structure
  */
 void resetSDO (CO_Data* d);
 
 
-/** 
+/**
  * @brief Copy the data received from the SDO line transfer to the object dictionary.
  * @param *d Pointer on a CAN object data structure
  * @param line SDO line
@@ -106,7 +119,7 @@ void resetSDO (CO_Data* d);
  */
 UNS32 SDOlineToObjdict (CO_Data* d, UNS8 line);
 
-/** 
+/**
  * @brief Copy the data from the object dictionary to the SDO line for a network transfer.
  * @param *d Pointer on a CAN object data structure
  * @param line SDO line
@@ -114,7 +127,7 @@ UNS32 SDOlineToObjdict (CO_Data* d, UNS8 line);
  */
 UNS32 objdictToSDOline (CO_Data* d, UNS8 line);
 
-/** 
+/**
  * @brief Copy data from an existant line in the argument "* data"
  * @param d Pointer on a CAN object data structure
  * @param line SDO line
@@ -124,7 +137,7 @@ UNS32 objdictToSDOline (CO_Data* d, UNS8 line);
  */
 UNS8 lineToSDO (CO_Data* d, UNS8 line, UNS32 nbBytes, UNS8 * data);
 
-/** 
+/**
  * @brief Add data to an existant line
  * @param d Pointer on a CAN object data structure
  * @param line SDO line
@@ -134,7 +147,7 @@ UNS8 lineToSDO (CO_Data* d, UNS8 line, UNS32 nbBytes, UNS8 * data);
  */
 UNS8 SDOtoLine (CO_Data* d, UNS8 line, UNS32 nbBytes, UNS8 * data);
 
-/** 
+/**
  * @brief Called when an internal SDO abort occurs.
  * Release the line * Only if server *
  * If client, the line must be released manually in the core application.
@@ -151,14 +164,14 @@ UNS8 SDOtoLine (CO_Data* d, UNS8 line, UNS32 nbBytes, UNS8 * data);
  */
 UNS8 failedSDO (CO_Data* d, UNS8 CliServNbr, UNS8 whoami, UNS16 index, UNS8 subIndex, UNS32 abortCode);
 
-/** 
+/**
  * @brief Reset an unused line.
  * @param *d Pointer on a CAN object data structure
  * @param line SDO line
  */
 void resetSDOline (CO_Data* d, UNS8 line);
 
-/** 
+/**
  * @brief Initialize some fields of the structure.
  * @param *d Pointer on a CAN object data structure
  * @param line
@@ -170,30 +183,30 @@ void resetSDOline (CO_Data* d, UNS8 line);
  */
 UNS8 initSDOline (CO_Data* d, UNS8 line, UNS8 CliServNbr, UNS16 index, UNS8 subIndex, UNS8 state);
 
-/** 
+/**
  * @brief Search for an unused line in the transfers array
  * to store a new SDO.
  * ie a line which value of the field "state" is "SDO_RESET"
  * An unused line have the field "state" at the value SDO_RESET
  * @param *d Pointer on a CAN object data structure
  * @param whoami Create the line for a SDO_SERVER or SDO_CLIENT.
- * @param *line Pointer on a SDO line 
+ * @param *line Pointer on a SDO line
  * @return 0xFF if all the lines are on use. Else, return 0.
  */
 UNS8 getSDOfreeLine (CO_Data* d, UNS8 whoami, UNS8 *line);
 
-/** 
+/**
  * @brief Search for the line, in the transfers array, which contains the
  * beginning of the reception of a fragmented SDO
  * @param *d Pointer on a CAN object data structure
  * @param CliServNbr Client or Server object involved
  * @param whoami takes 2 values : look for a line opened as SDO_CLIENT or SDO_SERVER
- * @param *line Pointer on a SDO line 
+ * @param *line Pointer on a SDO line
  * @return 0xFF if error.  Else, return 0
  */
 UNS8 getSDOlineOnUse (CO_Data* d, UNS8 CliServNbr, UNS8 whoami, UNS8 *line);
 
-/** 
+/**
  * @brief Search for the line, in the transfers array, which contains the
  * beginning of the reception of a fragmented SDO
  *
@@ -208,7 +221,7 @@ UNS8 getSDOlineOnUse (CO_Data* d, UNS8 CliServNbr, UNS8 whoami, UNS8 *line);
  */
 UNS8 getSDOlineToClose (CO_Data* d, UNS8 CliServNbr, UNS8 whoami, UNS8 *line);
 
-/** 
+/**
  * @brief Close a transmission.
  * @param *d Pointer on a CAN object data structure
  * @param CliServNbr Client or Server object involved
@@ -216,19 +229,19 @@ UNS8 getSDOlineToClose (CO_Data* d, UNS8 CliServNbr, UNS8 whoami, UNS8 *line);
  */
 UNS8 closeSDOtransfer (CO_Data* d, UNS8 CliServNbr, UNS8 whoami);
 
-/** 
+/**
  * @brief Bytes in the line structure which must be transmited (or received)
  * @param *d Pointer on a CAN object data structure
- * @param line SDO line 
+ * @param line SDO line
  * @param *nbBytes Pointer on nbBytes
  * @return 0.
  */
 UNS8 getSDOlineRestBytes (CO_Data* d, UNS8 line, UNS32 * nbBytes);
 
-/** 
+/**
  * @brief Store in the line structure the nb of bytes which must be transmited (or received)
  * @param *d Pointer on a CAN object data structure
- * @param line SDO line 
+ * @param line SDO line
  * @param nbBytes
  * @return 0 if success, 0xFF if error.
  */
@@ -244,7 +257,7 @@ UNS8 setSDOlineRestBytes (CO_Data* d, UNS8 line, UNS32 nbBytes);
  */
 UNS8 sendSDO (CO_Data* d, UNS8 whoami, UNS8 CliServNbr, UNS8 *pData);
 
-/** 
+/**
  * @brief Transmit a SDO error to the client. The reasons may be :
  * Read/Write to a undefined object
  * Read/Write to a undefined subindex
@@ -260,12 +273,12 @@ UNS8 sendSDO (CO_Data* d, UNS8 whoami, UNS8 CliServNbr, UNS8 *pData);
  */
 UNS8 sendSDOabort (CO_Data* d, UNS8 whoami, UNS8 CliServNbr, UNS16 index, UNS8 subIndex, UNS32 abortCode);
 
-/** 
+/**
  * @brief Treat a SDO frame reception
  * call the function sendSDO
  * @param *d Pointer on a CAN object data structure
- * @param *m Pointer on a CAN message structure 
- * @return code : 
+ * @param *m Pointer on a CAN message structure
+ * @return code :
  * 		   - 0xFF if error
  *         - 0x80 if transfer aborted by the server
  *         - 0x0  ok
@@ -281,7 +294,7 @@ UNS8 proceedSDO (CO_Data* d, Message *m);
  */
 void resetClientSDOLineFromNodeId(CO_Data* d, UNS8 nodeId);
 
-/** 
+/**
  * @ingroup sdo
  * @brief Used to send a SDO request frame to write the data at the index and subIndex indicated
  * @param *d Pointer to a CAN object data structure
@@ -291,7 +304,7 @@ void resetClientSDOLineFromNodeId(CO_Data* d, UNS8 nodeId);
  * @param count number of bytes to write in the dictionnary.
  * @param dataType (defined in objdictdef.h) : put "visible_string" for strings, 0 for integers or reals or other value.
  * @param *data Pointer to data
- * @return 
+ * @return
  * - 0 is returned upon success.
  * - 0xFE is returned when no sdo client to communicate with node.
  * - 0xFF is returned when error occurs.
@@ -299,7 +312,7 @@ void resetClientSDOLineFromNodeId(CO_Data* d, UNS8 nodeId);
 UNS8 writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
 		       UNS8 subIndex, UNS32 count, UNS8 dataType, void *data, UNS8 useBlockMode);
 
-/** 
+/**
  * @ingroup sdo
  * @brief Used to send a SDO request frame to write in a distant node dictionnary.
  * @details The function Callback which must be defined in the user code is called at the
@@ -312,12 +325,12 @@ UNS8 writeNetworkDict (CO_Data* d, UNS8 nodeId, UNS16 index,
  * @param dataType (defined in objdictdef.h) : put "visible_string" for strings, 0 for integers or reals or other value.
  * @param *data Pointer to data
  * @param Callback Callback function
- * @return 
+ * @return
  * - 0 is returned upon success.
  * - 0xFE is returned when no sdo client to communicate with node.
  * - 0xFF is returned when error occurs.
  */
-UNS8 writeNetworkDictCallBack (CO_Data* d, UNS8 nodeId, UNS16 index,
+CanOpen_SDO_StateTypeDef writeNetworkDictCallBack (CO_Data* d, UNS8 nodeId, UNS16 index,
 		       UNS8 subIndex, UNS32 count, UNS8 dataType, void *data, SDOCallback_t Callback, UNS8 useBlockMode);
 
 /**

@@ -9,8 +9,8 @@
 */
 
 #include "lss.h"
-#include "data.h"
-#include "canfestival.h"
+// #include "data.h"
+// #include "canfestival.h"
 #include "sysdep.h"
 
 #ifdef CO_ENABLE_LSS
