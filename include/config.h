@@ -105,9 +105,10 @@
 
 #ifdef CO_STACK_ENABLE_DEBUG
 #    ifdef CO_STACK_ENABLE_CUSTOM_LOG
-#        define MSG(...) CO_LOG(__VA_ARGS__)
-#        define MSG_WAR(num, str, val) CO_LOG_WAR("MSG_WAR %x %s %x\n", num, str, val)
-#        define MSG_ERR(num, str, val) CO_LOG_ERR("MSG_ERR %x %s %x\n", num, str, val)
+void co_log(const char* fmt, ...);
+#        define MSG(...) co_log(__VA_ARGS__)
+#        define MSG_WAR(num, str, val) MSG("MSG_WAR %x %s %x\n", num, str, val)
+#        define MSG_ERR(num, str, val) MSG("MSG_ERR %x %s %x\n", num, str, val)
 #    else
 #        include "stdio.h"
 #        define MSG(...) printf(__VA_ARGS__)

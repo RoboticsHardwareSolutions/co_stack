@@ -30,12 +30,15 @@ All custom options (Examples):
 
 // If you need logs:
 #define CO_STACK_ENABLE_DEBUG
-
 // If you need custom log (CO_STACK_ENABLE_DEBUG must be defined):
 #define CO_STACK_ENABLE_CUSTOM_LOG
-/***** EXAMPLE FOR RLOG LIB *****/
-#include "rlog.h"
-#define CO_LOG(...) RLOG_INFO(__VA_ARGS__)
-#define CO_LOG_WAR(...) RLOG_WARNING(__VA_ARGS__)
-#define CO_LOG_ERR(...) RLOG_ERROR(__VA_ARGS__)
+// You must define reference for void co_log(const char* fmt, ...); in you code. For Example:
+/*
+ * void co_log(const char *fmt, ...) {
+ *      va_list ap;
+ *      va_start(ap, fmt);
+ *      printf(fmt, &ap);
+ *      va_end(ap);
+ * }
+ */
 ```
