@@ -19,7 +19,7 @@ int canSend(CAN_PORT fd0, Message const *m);
 int canClose();
 
 
-#define _P(fc) case fc: MSG(#fc" ");break;
+#define CASE_MSG(fc) case fc: MSG(#fc" ");break;
 
 static inline void print_message(Message const *m) {
     int i;
@@ -41,37 +41,37 @@ static inline void print_message(Message const *m) {
                 MSG("SLSS ");
         break;
 #endif
-        _P(TIME_STAMP)
-        _P(PDO1tx)
-        _P(PDO1rx)
-        _P(PDO2tx)
-        _P(PDO2rx)
-        _P(PDO3tx)
-        _P(PDO3rx)
-        _P(PDO4tx)
-        _P(PDO4rx)
-        _P(SDOtx)
-        _P(SDOrx)
-        _P(NODE_GUARD)
-        _P(NMT)
+        CASE_MSG(TIME_STAMP)
+        CASE_MSG(PDO1tx)
+        CASE_MSG(PDO1rx)
+        CASE_MSG(PDO2tx)
+        CASE_MSG(PDO2rx)
+        CASE_MSG(PDO3tx)
+        CASE_MSG(PDO3rx)
+        CASE_MSG(PDO4tx)
+        CASE_MSG(PDO4rx)
+        CASE_MSG(SDOtx)
+        CASE_MSG(SDOrx)
+        CASE_MSG(NODE_GUARD)
+        CASE_MSG(NMT)
     }
     if (fc == SDOtx) {
         switch (m->data[0] >> 5) {
             /* scs: server command specifier */
-            _P(UPLOAD_SEGMENT_RESPONSE)
-            _P(DOWNLOAD_SEGMENT_RESPONSE)
-            _P(INITIATE_DOWNLOAD_RESPONSE)
-            _P(INITIATE_UPLOAD_RESPONSE)
-            _P(ABORT_TRANSFER_REQUEST)
+            CASE_MSG(UPLOAD_SEGMENT_RESPONSE)
+            CASE_MSG(DOWNLOAD_SEGMENT_RESPONSE)
+            CASE_MSG(INITIATE_DOWNLOAD_RESPONSE)
+            CASE_MSG(INITIATE_UPLOAD_RESPONSE)
+            CASE_MSG(ABORT_TRANSFER_REQUEST)
         }
     } else if (fc == SDOrx) {
         switch (m->data[0] >> 5) {
             /* ccs: client command specifier */
-            _P(DOWNLOAD_SEGMENT_REQUEST)
-            _P(INITIATE_DOWNLOAD_REQUEST)
-            _P(INITIATE_UPLOAD_REQUEST)
-            _P(UPLOAD_SEGMENT_REQUEST)
-            _P(ABORT_TRANSFER_REQUEST)
+            CASE_MSG(DOWNLOAD_SEGMENT_REQUEST)
+            CASE_MSG(INITIATE_DOWNLOAD_REQUEST)
+            CASE_MSG(INITIATE_UPLOAD_REQUEST)
+            CASE_MSG(UPLOAD_SEGMENT_REQUEST)
+            CASE_MSG(ABORT_TRANSFER_REQUEST)
         }
     }
     MSG(" rtr:%d", m->rtr);
