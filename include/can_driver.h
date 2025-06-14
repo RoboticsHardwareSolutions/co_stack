@@ -3,6 +3,7 @@
 
 #include "def.h"
 #include "co_can.h"
+#include "config.h"
 
 
 
