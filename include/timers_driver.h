@@ -10,7 +10,6 @@
 
 // For use from CAN driver
 
-
 /**
  * @ingroup timer
  * @brief Acquire mutex
@@ -33,7 +32,7 @@ void TimerInit(void);
 
 /**
  * @ingroup timer
- * @brief Cleanup Timer  
+ * @brief Cleanup Timer
  */
 void TimerCleanup(void);
 

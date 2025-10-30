@@ -6,25 +6,26 @@
 #include "objacces.h"
 // #include "data.h"
 
-//typedef struct struct_CO_Data CO_Data;
+// typedef struct struct_CO_Data CO_Data;
 /* --------- types and constants definitions --------- */
-
 
 typedef void (*TimerCallback_t)(CO_Data* d, UNS32 id);
 
-struct struct_s_timer_entry {
-	UNS8 state;
-	CO_Data* d;
-	TimerCallback_t callback; /* The callback func. */
-	UNS32 id; /* The callback func. */
-	TIMEVAL val;
-	TIMEVAL interval; /* Periodicity */
+struct struct_s_timer_entry
+{
+    UNS8            state;
+    CO_Data*        d;
+    TimerCallback_t callback; /* The callback func. */
+    UNS32           id;       /* The callback func. */
+    TIMEVAL         val;
+    TIMEVAL         interval; /* Periodicity */
 };
 
 typedef struct struct_s_timer_entry s_timer_entry;
 
 /* ---------  prototypes --------- */
-/*#define SetAlarm(d, id, callback, value, period) printf("%s, %d, SetAlarm(%s, %s, %s, %s, %s)\n",__FILE__, __LINE__, #d, #id, #callback, #value, #period); _SetAlarm(d, id, callback, value, period)*/
+/*#define SetAlarm(d, id, callback, value, period) printf("%s, %d, SetAlarm(%s, %s, %s, %s, %s)\n",__FILE__, __LINE__,
+ * #d, #id, #callback, #value, #period); _SetAlarm(d, id, callback, value, period)*/
 /**
  * @ingroup timer
  * @brief Set an alarm to execute a callback function when expired.
