@@ -7,12 +7,12 @@
 **
 **
 */
- 
+
 /** @defgroup emcyo Emergency Object
  *  Emergency Object is used to communicate device and application failures.
  *  @ingroup comobj
  */
-					 
+
 #ifndef __emcy_h__
 #define __emcy_h__
 
@@ -20,20 +20,22 @@
 #include "objacces.h"
 #include "co_can.h"
 
-//typedef struct struct_CO_Data CO_Data;
-//typedef struct Message Message;
+// typedef struct struct_CO_Data CO_Data;
+// typedef struct Message Message;
 
-/* The error states 
+/* The error states
  * ----------------- */
-typedef enum enum_errorState {
-  Error_free		= 0x00, 
-  Error_occurred	= 0x01
+typedef enum enum_errorState
+{
+    Error_free     = 0x00,
+    Error_occurred = 0x01
 } e_errorState;
 
-typedef struct {
-	UNS16 errCode;
-	UNS8 errRegMask;
-	UNS8 active;
+typedef struct
+{
+    UNS16 errCode;
+    UNS8  errRegMask;
+    UNS8  active;
 } s_errors;
 
 typedef void (*post_emcy_t)(CO_Data* d, UNS8 nodeID, UNS16 errCode, UNS8 errReg, const UNS8 errSpec[5]);
@@ -43,7 +45,7 @@ void _post_emcy(CO_Data* d, UNS8 nodeID, UNS16 errCode, UNS8 errReg, const UNS8 
  * Functions
  *************************************************************************/
 
-/** 
+/**
  * @ingroup emcy
  * @brief Sets a new error with code errCode. Also sets corresponding bits in Error register (1001h)
  * @param *d Pointer on a CAN object data structure
@@ -55,7 +57,7 @@ void _post_emcy(CO_Data* d, UNS8 nodeID, UNS16 errCode, UNS8 errReg, const UNS8 
 UNS8 EMCY_setError(CO_Data* d, UNS16 errCode, UNS8 errRegMask, UNS16 addInfo);
 
 /**
- * @ingroup emcy 
+ * @ingroup emcy
  * @brief Indicates it has recovered from error errCode. Also clears corresponding bits in Error register (1001h)
  * @param *d Pointer on a CAN object data structure
  * @param errCode The error code
@@ -63,23 +65,23 @@ UNS8 EMCY_setError(CO_Data* d, UNS16 errCode, UNS8 errRegMask, UNS16 addInfo);
 void EMCY_errorRecovered(CO_Data* d, UNS16 errCode);
 
 /**
- * @ingroup emcy 
+ * @ingroup emcy
  * @brief Start EMCY consumer and producer
  * @param *d Pointer on a CAN object data structure
  */
 void emergencyInit(CO_Data* d);
 
-/** 
+/**
  * @ingroup emcy
  * @brief Stop EMCY producer and consumer
- * @param *d Pointer on a CAN object data structure 
+ * @param *d Pointer on a CAN object data structure
  */
 void emergencyStop(CO_Data* d);
 
-/** 
+/**
  * @ingroup emcy
  * @brief This function is responsible to process an EMCY canopen-message
- * @param *d Pointer on a CAN object data structure 
+ * @param *d Pointer on a CAN object data structure
  * @param *m Pointer on the CAN-message which has to be analysed.
  */
 void proceedEMCY(CO_Data* d, Message* m);

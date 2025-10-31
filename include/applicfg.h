@@ -7,7 +7,6 @@
 // #include <string.h>
 // #include <time.h>
 
-
 /*  Define the architecture : little_endian or big_endian
  -----------------------------------------------------
  Test :
@@ -38,32 +37,30 @@
 #define INTEGER64 int64_t
 
 /* Unsigned integers */
-#define UNS8   uint8_t
-#define UNS16  uint16_t
-#define UNS32  uint32_t
-#define UNS24  uint32_t
-#define UNS40  uint64_t
-#define UNS48  uint64_t
-#define UNS56  uint64_t
-#define UNS64  uint64_t
+#define UNS8 uint8_t
+#define UNS16 uint16_t
+#define UNS32 uint32_t
+#define UNS24 uint32_t
+#define UNS40 uint64_t
+#define UNS48 uint64_t
+#define UNS56 uint64_t
+#define UNS64 uint64_t
 
 /* Reals */
 #define REAL32 float
 #define REAL64 double
 
-
-
 #if defined(__GNUC__) || defined(__MINGW32__) || defined(__MINGW__)
-#define dFUNCTION __PRETTY_FUNCTION__
+#    define dFUNCTION __PRETTY_FUNCTION__
 #else
-#ifdef _MSC_VER
-#define dFUNCTION __FUNCSIG__
-#else
-#define dFUNCTION __FUNCTION__
-#endif
+#    ifdef _MSC_VER
+#        define dFUNCTION __FUNCSIG__
+#    else
+#        define dFUNCTION __FUNCTION__
+#    endif
 #endif
 
-typedef void *CAN_PORT;
+typedef void*                 CAN_PORT;
 typedef struct struct_CO_Data CO_Data;
 
 #endif
