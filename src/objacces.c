@@ -126,10 +126,9 @@ UNS32 _getODentry(CO_Data* d,
         for (i = szData; i > 0; i--)
         {
             MSG_WAR(i, " ", j);
-            ((UNS8*) pDestData)[j++] =
-                ((UNS8*) ptrTable->pSubindex[bSubindex].bAccessType == CONST
-                 ? ptrTable->pSubindex[bSubindex].pObjectConst)[i - 1] : ptrTable->pSubindex[bSubindex]
-                       .pObject)[i - 1];
+            ((UNS8*) pDestData)[j++] = ((UNS8*) ptrTable->pSubindex[bSubindex].bAccessType == CONST
+                                        ? ptrTable->pSubindex[bSubindex].pObjectConst)[i - 1]
+                                        : ptrTable->pSubindex[bSubindex].pObject)[i - 1];
         }
         *pExpectedSize = szData;
     }
