@@ -14,23 +14,24 @@ target_include_directories(
 
 
 #################### FORMAT SECTION #######################
-include(FetchContent)
-FetchContent_Declare(
-        rlibhelper
-        GIT_REPOSITORY https://github.com/RoboticsHardwareSolutions/rlibhelper.git
-        GIT_TAG main
-)
-FetchContent_MakeAvailable(rlibhelper)
 
 file(GLOB_RECURSE SRC_FILES "src/*.*")
 file(GLOB_RECURSE INCLUDE_FILES "include/*.*")
 
 set(ALL_PROJECT_FILES ${SRC_FILES} ${INCLUDE_FILES})
 
-
-
+if (NOT TARGET rlibhelper)
+    include(FetchContent)
+    FetchContent_Declare(
+            rlibhelper
+            GIT_REPOSITORY https://github.com/RoboticsHardwareSolutions/rlibhelper.git
+            GIT_TAG main
+    )
+    FetchContent_MakeAvailable(rlibhelper)
+endif ()
 
 set(FILES_FOR_FORMATTING ${SRC_FILES})
+
 if (EXISTS "${rlibhelper_SOURCE_DIR}/format.cmake")
     include(${rlibhelper_SOURCE_DIR}/format.cmake)
 else ()
